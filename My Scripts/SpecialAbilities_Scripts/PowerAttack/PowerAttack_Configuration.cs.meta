@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: b7c1664888bcd4de79346335ad185e1f
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - m_AbilityParticleFX: {fileID: 1801499574060590, guid: 84b8d1cada54f4daeabb876802356682,
+      type: 2}
+  - m_AbilityAudioClip: {fileID: 8300000, guid: 2052eab8b8ae64aefa55f22d02e0143b,
+      type: 3}
+  - m_AbilityAnimation: {fileID: 7400000, guid: 7b5b17e2d42e0424f9c36012595dc9b6,
+      type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
