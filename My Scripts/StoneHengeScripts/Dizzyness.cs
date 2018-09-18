@@ -97,7 +97,7 @@ public class Dizzyness : MonoBehaviour
         Destroy(this);
     }
 
-    private void OnTriggerExit(Collider other)
+    void OnTriggerExit(Collider other)
     {
         if (other.name == playerName)
         {

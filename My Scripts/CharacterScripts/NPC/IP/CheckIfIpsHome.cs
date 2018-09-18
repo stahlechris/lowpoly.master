@@ -17,7 +17,8 @@ public class CheckIfIpsHome : MonoBehaviour
     public AudioSource rubyAudio;
     public Item rubyItem;
     public Levitate rubyLevitate;
-    private void OnTriggerEnter(Collider other)
+
+    void OnTriggerEnter(Collider other)
     {
         if (!secretActivated) //can't do it twice
         {
@@ -68,7 +69,7 @@ public class CheckIfIpsHome : MonoBehaviour
         Destroy();
     }
 
-    private void OnCollisionEnter(Collision other)
+    void OnCollisionEnter(Collision other)
     {
         if (other.transform.name == IP && secretActivated)
         {
@@ -91,7 +92,7 @@ public class CheckIfIpsHome : MonoBehaviour
         DialogueEvents.OnDialogueEnd -= Handle_OnDialogueEnd;
         Destroy(this.gameObject,2f);
     }
-    private void OnDisable()
+    void OnDisable()
     {
         DialogueEvents. OnDialogueEnd -= Handle_OnDialogueEnd;
     }

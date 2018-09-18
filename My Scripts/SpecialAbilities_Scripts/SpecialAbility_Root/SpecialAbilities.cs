@@ -30,7 +30,7 @@ namespace LowPoly.Character
 
         }
 
-        private void Update()
+         void Update()
         {
             if (m_CurrentMana < m_MaxMana)
             {
@@ -39,7 +39,7 @@ namespace LowPoly.Character
             }
         }
 
-        private void AttachInitialAbilities()
+         void AttachInitialAbilities()
         {
             for (int i = 0; i < m_SpecialAbilities.Length; i++)
             {

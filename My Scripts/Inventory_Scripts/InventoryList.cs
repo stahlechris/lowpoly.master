@@ -103,7 +103,7 @@ public class InventoryList : MonoBehaviour
         foreach (InventorySlotStack slot in m_ListOfSlotStacks)
         {
             InventoryItemBase temp = slot.RemoveByStringID(itemName);
-            if ( temp != null)
+            if (temp != null)
             {
                 if (OnItemRemoved != null)
                 {

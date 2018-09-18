@@ -5,16 +5,17 @@ using System.Collections;
 
 public class HUD : MonoBehaviour
 {
-    private bool m_IsMessagePanelOpened = false;
-    //bool firstQuest = true;
+    bool m_IsMessagePanelOpened = false;
+    public GameObject inventoryPanel;
     public InventoryList inventory;
     public QuestList quests;
     public GameObject MessagePanel;
     public TextMeshProUGUI questText;
     public GameObject questCanvas;
     public Transform[] questCanvasChildren;
+    public GameObject discoveryPanel;
+    public TextMeshProUGUI discoveryText;
     public int childIndex = 1;
-    //private AudioSource UI_AudioSource;
 
     void Start()
     {   //For button press noises
@@ -26,10 +27,12 @@ public class HUD : MonoBehaviour
         inventory.OnItemRemoved += Inventory_ItemRemoved;
         quests.OnQuestAdded += Quest_OnQuestAdded;
         quests.OnQuestRemoved += Quest_OnQuestRemoved;
+        DialogueEvents.OnDialogueStart += Dialogue_OnDialogueStart;
+        DialogueEvents.OnDialogueEnd += Dialogue_OnDialogueEnd;
         DiscoveryEvents.OnDiscovery += Handle_OnDiscovery; //todo consider this being non- static...i dont think it needs to be
     }
 #region INVENTORY EVENT HANDLERS
-    private void Inventory_ItemAdded(object sender, InventoryEventArgs e)
+    void Inventory_ItemAdded(object sender, InventoryEventArgs e)
     {
         //Debug.Log("Received item added event. Updating HUD");
         Transform inventoryPanel = transform.Find("InventoryPanel");
@@ -68,7 +71,7 @@ public class HUD : MonoBehaviour
         }
     }
 
-    private void Inventory_ItemRemoved(object sender, InventoryEventArgs e)
+    void Inventory_ItemRemoved(object sender, InventoryEventArgs e)
     {
         Transform inventoryPanel = transform.Find("InventoryPanel");
         int index = -1;
@@ -193,10 +196,25 @@ public class HUD : MonoBehaviour
     void Handle_OnDiscovery(string areaDiscoveredName, int questID_AssociatedWithDiscovery)
     {
         //Debug.Log("you just discovered " + areaDiscoveredName + "for the questID " + questID_AssociatedWithDiscovery);
+        StartCoroutine(ShowDiscoveryBanner(areaDiscoveredName));
         //UpdateQuestDescription(questID_AssociatedWithDiscovery);
-        //we need a new reference to the QuestBaseClass here
-        //we need to receive the Quest_ID here...which quest is this event associated with
         //UpdateDiscoveryQuestStatus(areaDiscoveredName);
+        //this will write the areaDiscoveredName on the questDescription
+
+    }
+
+    IEnumerator ShowDiscoveryBanner(string text)
+    {
+        //activate the DiscoveryPanelImage
+        discoveryPanel.SetActive(true);
+        //set the text in the DiscoveryText (must occur on an active GO & parent)
+        discoveryText.SetText(text);
+        //Show the banner for x seconds.
+        yield return new WaitForSeconds(4);
+        //clear the text
+        discoveryText.SetText("");
+        //deactivate the DiscoveryPanelImage
+        discoveryPanel.SetActive(false);
     }
 #endregion QUEST METHODS
     #region Message Panel Popup Bar 
@@ -231,7 +249,7 @@ public class HUD : MonoBehaviour
         Text mpText = MessagePanel.transform.Find("TextMessage").GetComponent<Text>();
         if(message == null)
         {
-            mpText.text = "- Press X to Talk -";
+            mpText.text = "- Press E to Talk -";
         }
         else
         {
@@ -247,4 +265,24 @@ public class HUD : MonoBehaviour
         m_IsMessagePanelOpened = false;
     }
     #endregion Message Panel Popup Bar
+
+    #region Dialogue Hides Inventory Panel
+    void Dialogue_OnDialogueStart(Dialogue d)
+    {
+        //keep an eye on this...inventory will get fucked if you loot and talk at the same time?
+        inventoryPanel.SetActive(false);
+    }
+    void Dialogue_OnDialogueEnd(Dialogue d)
+    {
+        inventoryPanel.SetActive(true);
+    }
+
+
+    #endregion
+    void OnDisable()
+    {
+        DialogueEvents.OnDialogueStart -= Dialogue_OnDialogueStart;
+        DialogueEvents.OnDialogueEnd -= Dialogue_OnDialogueEnd;
+        DiscoveryEvents.OnDiscovery -= Handle_OnDiscovery;
+    }
 }

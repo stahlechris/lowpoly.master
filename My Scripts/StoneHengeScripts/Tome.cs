@@ -63,7 +63,7 @@ public class Tome : Interactable
         //switch based on string id
     }
 
-    private void OnTriggerExit(Collider other)
+    void OnTriggerExit(Collider other)
     {
         if(other.name == PLAYER_NAME)
         {

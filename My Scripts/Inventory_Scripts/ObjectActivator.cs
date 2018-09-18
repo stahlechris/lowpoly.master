@@ -2,7 +2,7 @@
 
 /* This script disables resource intensive(RIO) GO's when a conversation is started and
  * enables them when a conversation is finished...
- * This script assumes all conversations will take place away from RIO's */
+ * This script assumes all conversations will take place facing away from RIO's */
 public class ObjectActivator : MonoBehaviour 
 {
     public GameObject[] ResourceIntensiveObjects;
@@ -15,7 +15,7 @@ public class ObjectActivator : MonoBehaviour
 
     void Handle_OnDialogueStart(Dialogue dialogueItem)
     {
-        //Ex: Text will display slower if water is on.
+        //Ex: Need bc text will display slower if water is on.
         ActivateResourceIntensiveObjects(false);
     }
     void Handle_OnDialogueEnd(Dialogue dialogueItem)
@@ -27,10 +27,12 @@ public class ObjectActivator : MonoBehaviour
     {
         foreach (GameObject go in ResourceIntensiveObjects)
         {
+            //turn of GO's
             if (!active)
             {
                 go.SetActive(false);
             }
+            //turn on GO's
             else
             {
                 go.SetActive(true);

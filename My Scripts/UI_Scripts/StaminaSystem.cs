@@ -20,7 +20,8 @@ namespace LowPoly.Character
         public bool isCatchingBreath = false;
 
         public bool isSprinting;
-        private void Update()
+
+        void Update()
         {
             if (m_CurrentStamina < m_MaxStamina)
             {
@@ -43,13 +44,13 @@ namespace LowPoly.Character
         }
 
         //todo make this a coroutine
-        private void RegenerateStaminaOverTime()
+        void RegenerateStaminaOverTime()
         {
             var staminaToAdd = staminaRegenerationRate * Time.deltaTime;
             m_CurrentStamina = Mathf.Clamp(m_CurrentStamina + staminaToAdd, 0, m_MaxStamina); //clamp so it can't go above or below
         }
 
-        private void ConsumeStamina(float amountToConsume)
+        void ConsumeStamina(float amountToConsume)
         {
             float updatedStamina = (m_CurrentStamina - amountToConsume);
             m_CurrentStamina = Mathf.Clamp(updatedStamina, 0, m_MaxStamina);

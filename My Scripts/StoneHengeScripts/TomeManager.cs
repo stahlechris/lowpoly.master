@@ -5,7 +5,6 @@ public class TomeManager : MonoBehaviour
 {
     public StonehengeManager stonehengeManager;
     public Collider[] tomeColliders;
-    public Light[] tomeLights;
     public Levitate tomeLevitation;
     public void Handle_ReadingWithoutPermission(PlayerController player)
     {
@@ -45,4 +44,6 @@ public class TomeManager : MonoBehaviour
         player.hud.CloseMessagePanel();
         player.m_PersonRequestingToBeSpokenWith = null;
     }
+
+
 }

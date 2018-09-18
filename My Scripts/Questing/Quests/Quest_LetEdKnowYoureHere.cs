@@ -15,7 +15,7 @@ public class Quest_LetEdKnowYoureHere : Quest
             "You've just met Ip, a caretaker of the isle." +
             " Ip said his brother, Ed, was the one who called you " +
             "and he should be on the Templ's right side, next to the herd.";
-        QuestStartPoint = GameObject.Find("Ip").transform; //figure this string transform shit out 
+        QuestStartPoint = transform.parent;
         QuestTurnInPoint = GameObject.Find("Ed").transform;
         QuestReward = null;
         QuestStatus = true; //QuestStatus is true, you just need to turn in the Quest

@@ -9,11 +9,11 @@ namespace LowPoly.Character
     public class PlayerController : MonoBehaviour
     {
         public SetCamera thirdPersonCam;
-        //TODO delete private keyword
         CustomMovement m_Character;
         Transform m_Cam;
         Vector3 m_CamForward;       // The current forward direction of the camera
         Vector3 m_Move;
+        Rigidbody myRigidbody;
         bool m_Jump;
         bool m_AutoRunPressed;
         bool m_isAutoRunning;
@@ -49,6 +49,7 @@ namespace LowPoly.Character
                 Debug.LogWarning("No camera tagged as 'MainCamera'.");
             }
             m_Character = GetComponent<CustomMovement>(); //be able to move
+            myRigidbody = GetComponent<Rigidbody>();
             animator = GetComponent<Animator>(); //pick stuff up & drop stuff
             m_SpecialAbilities = GetComponent<SpecialAbilities>(); //cast spells
             m_WeaponSystem = GetComponent<WeaponSystem>(); //hit stuff
@@ -152,8 +153,8 @@ namespace LowPoly.Character
                 }
 
                 //TODO: sync footsteps with sprinting
-                //if (Input.GetKey(KeyCode.LeftShift) ) //little weird innit?
-                if( (!m_StaminaSystem.isCatchingBreath && Input.GetKey(KeyCode.LeftShift) )|| 
+                //if (Input.GetKey(KeyCode.LeftShift) ) //little weird innit? //TODO add "&& isMoving
+                if( (!m_StaminaSystem.isCatchingBreath && Input.GetKey(KeyCode.LeftShift) && myRigidbody.velocity.magnitude > 0)|| 
                    (!m_StaminaSystem.isCatchingBreath && CrossPlatformInputManager.GetButton("AutoRun")) )
                 {
                     if (m_StaminaSystem.AttemptSprint())
@@ -209,7 +210,7 @@ namespace LowPoly.Character
         void SetPlayerPositionForConversation()
         {
             if(m_PersonRequestingToBeSpokenWith.CompareTag("Eyeguard"))
-            {
+            {//Right now the rotation is all off when Liam interacts becasue the objects orientation and local vs world is off
                 /* Interacting with the eyeguard might or might not happen only once : 
                  * In The stonehengeManager,
                  * 0. We need to set Liams position close enough for animation to look like he's poking Eyeguard in the eye and disable input.
@@ -218,9 +219,10 @@ namespace LowPoly.Character
                  * 3. Eyeguard UI needs to display an angry red "!?" symbol above head.
                  * 4. We need to shutoff this camera and enable the stonehengeCam....
                  */
-                //animator.SetTrigger("ReachForward");
+                animator.SetTrigger("ReachForward");
             }
-            else if (!m_PersonRequestingToBeSpokenWith.CompareTag("Tome")) //we dont set positioning for conversations with tomes
+            else if (!m_PersonRequestingToBeSpokenWith.CompareTag("Tome") || !m_PersonRequestingToBeSpokenWith.CompareTag("HelpfulFish")) 
+                //we dont set positioning for conversations with tomes..because we HATE tomes (and helpful fishes).
             {
                 //smoothly rotate the camera to the speaker
                 thirdPersonCam.RotateCamera(m_PersonRequestingToBeSpokenWith.transform);
@@ -251,11 +253,11 @@ namespace LowPoly.Character
             }
             else
             {
-                //dont set and just interact on the go
+                //dont set and just interact freely
 
             }
         }
-        //TODO: Call this to set Unarmed Animations vs Armed Animations
+        //TODO: Call this to set Unarmed Animations vs Armed Animations when ready
         public bool IsArmed
         {
             get
@@ -267,7 +269,7 @@ namespace LowPoly.Character
                 return false;
             }
         }
-        private void Inventory_ItemRemoved(object sender, InventoryEventArgs e)
+        void Inventory_ItemRemoved(object sender, InventoryEventArgs e)
         {
             //Do not do behavior below if the item has been given a death setence
             if (!e.m_Destroy)
@@ -312,14 +314,14 @@ namespace LowPoly.Character
             SetItemActive(mItemIAmHolding, true); //activate this one
 
         }
-        private void SetItemActive(InventoryItemBase item, bool active)
+        void SetItemActive(InventoryItemBase item, bool active)
         {
             GameObject currentItem = (item as MonoBehaviour).gameObject;
             currentItem.SetActive(active);
             currentItem.transform.parent = active ? m_hand.transform : null;
         }
 
-        private void DropCurrentItem()
+        void DropCurrentItem()
         {
             GameObject itemToDrop = mItemIAmHolding.gameObject;
 

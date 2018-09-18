@@ -9,6 +9,7 @@ using LowPoly.Character;
 //when the player goes to talk to the npc again, a new instantiation (without an update loop) will be made 
 public class Dialogue : MonoBehaviour 
 {
+    //TODO -> murmuring noises like zelda to show conversation happening
     public int numLinesOfDialogue;
     public string dialogueID; 
     public bool assignsQuestWhenOver;
@@ -24,9 +25,10 @@ public class Dialogue : MonoBehaviour
     public Collider my_collider;
     public TextAsset conversation { get; set; }
     public string path { get; set; }
-    public bool doUpdate = true;
+    public bool Initialized { get; set; }
     //public event EventHandler<DialogueEventArgs> OnDialogueStart;
     //public event EventHandler<DialogueEventArgs> OnDialogueEnd;
+    bool FacingFriend { get; set; }
 
     void ConversationConstructor()
     {   
@@ -52,7 +54,6 @@ public class Dialogue : MonoBehaviour
     void Start()
     {
         path = GetComponentInParent<QuestGiver>().path[0]; //load a conversation initially, but conversations can be changed due to behaving a certain way!!
-        friend = ObjectFinder.PlayerTransform;
         my_rigidBody = GetComponentInParent<Rigidbody>();
         my_collider = GetComponentInParent<Collider>();
         LoadConversation();
@@ -71,9 +72,7 @@ public class Dialogue : MonoBehaviour
 
     void Update()
     {
-        //TODO if FPS low, this Update will happen before a conversation is fully loaded,
-        //Causing dialogue to not display properly...after a conversation ends, this update loop runs about 50 more times
-        if (doUpdate)
+        if (Initialized) //elimainate a string comparison check in Update()
         {
             if (textDisplay.text == sentence[index])
             {
@@ -91,16 +90,18 @@ public class Dialogue : MonoBehaviour
     {
         if (!conversationOver)
         {
+            Initialized = true;            
             /*Events will return null if 1. nobody is listening to it 
              * 2.somebody is listening but not doing anything in the method
             */
             DialogueEvents.FireAnEvent_OnDialogueStart(this);
             //disable user input..were having a GOD DAMN conversation!
             Global.USER_INPUT_ENABLED = false;
+            Global.HAVING_A_CONVERSATION = true;
             textDisplay.text = "";
+            textDisplay.enabled = true;
             //must be delayed until player is in a fixed position
-            StartCoroutine(FaceMyFriend(friend));
-
+            StartCoroutine(FaceMyFriend());
             StartCoroutine(Talk());
         }
         else
@@ -114,6 +115,7 @@ public class Dialogue : MonoBehaviour
     }
     public IEnumerator Talk()
     {
+        yield return new WaitUntil(() => FacingFriend == true);  
         foreach (char letter in sentence[index])
         {
             textDisplay.text += letter;
@@ -132,7 +134,9 @@ public class Dialogue : MonoBehaviour
         }
         else//conversation complete
         {
+            Global.HAVING_A_CONVERSATION = false;
             //my_rigidBody.isKinematic = false;
+            Initialized = false;
             conversationOver = true;
             DialogueEvents.FireAnEvent_OnDialogueEnd(this);
             Debug.Log(this + " fired an OnDialogueEnd");
@@ -147,11 +151,17 @@ public class Dialogue : MonoBehaviour
             Rigidbody playersRigidBody = player.GetComponent<Rigidbody>();
             playersRigidBody.constraints = RigidbodyConstraints.None;//unfreeze
             playersRigidBody.constraints = RigidbodyConstraints.FreezeRotation;//refreeze to ground
-            Invoke("ClearText", 3f);
+            Invoke("ClearText", 2f);
+            textDisplay.enabled = false;
+            FacingFriend = false;
+            //reset secret dialogue flag so they can load another conversation
+            GetComponentInParent<QuestGiver>().hasDisocveredSecretDialogue = false;
 
             if (dialogueID == "Ip-0")
             {
                 NPC_AI ip_AI = GetComponentInParent<NPC_AI>();
+                JumpUpAndDown jumpBehavior = GetComponentInParent<JumpUpAndDown>();
+                jumpBehavior.enabled = false;
                 my_collider.enabled = false;
                 Animator animator = GetComponentInParent<Animator>();
                 animator.SetBool("run", true);
@@ -176,17 +186,18 @@ public class Dialogue : MonoBehaviour
      * FIX?:
      * -manually reset transforms after x amt of time
      */
-    IEnumerator FaceMyFriend(Transform target)
+    IEnumerator FaceMyFriend()
     {
         //trying to simply zero out NPC_canvas(clone) AND TextMeshPro rotation
         //THIS TOOK 2 HOURS TO FIGURE OUT
         //ROTATION VS LOCALROTATION....STILL DONT FULLY UNDERSTAND. FUCK mEEeEEEEeEEeEEEEEEE
-        yield return new WaitForSeconds(1.5f);
-
+        yield return new WaitForSeconds(1.75f);
+        //NPC_UI socket needs to be reset as well
         Transform[] parent = GetComponentsInParent<Transform>();
         parent[0].localRotation = Quaternion.Euler(0, 0, 0);
         parent[1].localRotation = Quaternion.Euler(0, -180, 0);
-
+        parent[2].localRotation = Quaternion.Euler(0, 0, 0);
+        FacingFriend = true;
     }
 
 }

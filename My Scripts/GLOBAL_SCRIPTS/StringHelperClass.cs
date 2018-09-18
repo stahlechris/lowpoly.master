@@ -40,6 +40,14 @@
         return result;
         //"Conversation_questTurnInPointName-5"
     }
+
+    public static string ParseDialogueIDForString(Dialogue item) //Carl-0
+    {
+        string itemName = item.dialogueID;
+        //retrieve all chars up to the - character.
+        string result = itemName.Substring(0, itemName.IndexOf('-'));
+        return result;
+    }
 }
 //public static void SetKeyActive(string key, bool active)
 //{

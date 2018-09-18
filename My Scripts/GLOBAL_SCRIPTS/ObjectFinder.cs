@@ -9,7 +9,7 @@ public class ObjectFinder : MonoBehaviour
     public static Transform PlayerTransform { get; set; }
     public static PlayerController PlayerController { get; set; }
     public static Rigidbody PlayerRigidBody { get; set; }
-
+    public static Animator PlayerAnimator { get; set; }
 
     public static QuestList QuestLog { get; set; }
 
@@ -21,6 +21,7 @@ public class ObjectFinder : MonoBehaviour
         PlayerController = PlayerGameObject.GetComponent<PlayerController>();
         PlayerTransform = PlayerGameObject.GetComponent<Transform>();
         PlayerRigidBody = PlayerGameObject.GetComponent<Rigidbody>();
+        PlayerAnimator = PlayerGameObject.GetComponent<Animator>();
 	}
    
 

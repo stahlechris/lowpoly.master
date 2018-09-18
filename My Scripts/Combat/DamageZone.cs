@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using LowPoly.Character;
 
@@ -7,6 +6,7 @@ using LowPoly.Character;
 public class DamageZone : MonoBehaviour  
 {
     [SerializeField]AudioSource m_AudioSource;
+    [SerializeField] AudioClip gettingBurnedNoise;
     //am i currently cuasing damage
     private bool m_IsCausingDamage = false;
 
@@ -15,27 +15,33 @@ public class DamageZone : MonoBehaviour
     [SerializeField] float damageRepeatRate = 2f;
     [SerializeField] bool isDamageAppliedRepeatedly = true;
 
+    private HealthSystem playersHealthSystem;
+
     private void OnTriggerEnter(Collider other)
     {
-        HealthSystem playersHealth = other.gameObject.GetComponent<HealthSystem>();
+        if (playersHealthSystem == null)
+        {
+            playersHealthSystem = other.gameObject.GetComponent<HealthSystem>();
+        }
         m_IsCausingDamage = true;
 
         if(isDamageAppliedRepeatedly)
         {
-            StartCoroutine(DealDamageRepeatedly(playersHealth, damageRepeatRate));
+            StartCoroutine(DealDamageRepeatedly(damageRepeatRate));
         }
         else //just inflict one-time damage
         {
-            playersHealth.TakeDamage(damageAmount);
+            playersHealthSystem.TakeDamage(damageAmount);
         }
     }
 
-    IEnumerator DealDamageRepeatedly(HealthSystem playersHealthSystem, float repeatRate)
+    IEnumerator DealDamageRepeatedly(float repeatRate)
     {
         while(m_IsCausingDamage)
         {
             playersHealthSystem.TakeDamage(damageAmount);
-            DealDamageRepeatedly(playersHealthSystem, repeatRate);
+            DealDamageRepeatedly(repeatRate);
+
             yield return new WaitForSeconds(repeatRate);
         }
     }

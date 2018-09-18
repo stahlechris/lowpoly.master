@@ -13,20 +13,18 @@ public class HelpfulFish : Interactable
     public float thrust;
     public GameObject canvas;
 
+    public TurnObjectsOffWhenInWater sheepSphere;
 
-    void OnTriggerStay(Collider other)
+    void OnTriggerStay(Collider other) //idea. ride the fish. make a little cave 
     {
-        if (other.name == PLAYER_NAME)
+        if (player == null)
         {
-            if (player == null)
-            {
-                player = other.GetComponent<PlayerController>();
-                rb = other.GetComponent<Rigidbody>();
-            }
-
-            player.m_PersonRequestingToBeSpokenWith = this.gameObject;
-            player.hud.OpenMessagePanel(this.gameObject, "-Press X to Go Back-");
+            player = other.GetComponent<PlayerController>();
+            rb = other.GetComponent<Rigidbody>();
         }
+
+        player.m_PersonRequestingToBeSpokenWith = this.gameObject;
+        player.hud.OpenMessagePanel(this.gameObject, "-Pls help me-");
     }
 
     public override void Interact()
@@ -40,6 +38,7 @@ public class HelpfulFish : Interactable
         //"NOOOOO!!! HELPFULFISH - I LOVE YOU!!
         Animator anim = player.GetComponent<Animator>();
         anim.SetTrigger("ReachingForward");
+        InformSheepSphere(); //activates sheep again in scene.
         StartCoroutine(SayGoodbye(anim));
     }
 
@@ -71,12 +70,15 @@ public class HelpfulFish : Interactable
     }
     void OnTriggerExit(Collider other)
     {
-        if (other.name == PLAYER_NAME)
-        {
-            player.hud.CloseMessagePanel();
-            player.m_PersonRequestingToBeSpokenWith = null;
-        }
+        player.hud.CloseMessagePanel();
+        player.m_PersonRequestingToBeSpokenWith = null;
     }
+    void InformSheepSphere()
+    {
+        sheepSphere.ActivateComponents();
+    }
+
+
     void CleanUpTheOcean()
     {
         //TODO destroy/disable objects here...

@@ -3,7 +3,6 @@ using UnityEngine;
 
 public class CameraChanger : MonoBehaviour 
 {
-
     public GameObject ThirdPersonCam; //0 
     public GameObject FirstPersonCam; //1 
     public int camMode;
@@ -13,21 +12,29 @@ public class CameraChanger : MonoBehaviour
         //TODO check on a timer, like in xbox controller script
         if(Input.GetButtonDown("Camera")) // "  \  "
         {
-            if(camMode == 1)
-            {
-                camMode = 0;
-            }
-            else
-            {
-                camMode += 1; //cycle through cam modes
-            }
-            StartCoroutine(CamChange());
+            ChangeCam(camMode);
         }
 	}
 
+    public void ChangeCam(int x)
+    {//when you call ChangeCam, it will always be called when the camera is 0, or the player cam
+        //assign the incoming value, redundancy ok here bc int
+        camMode = x;
+
+        if (camMode == 1) //only OnDialogueEnds call ChangeCam(1)
+        {
+            camMode = 0;
+        }
+        else
+        {
+            camMode += 1; //it's 0, increment to 1... aka cycle through cams
+        }
+        StartCoroutine(CamChange());
+    }
+
     IEnumerator CamChange() 
     {
-        yield return new WaitForSeconds(0.01f);
+        yield return null;
         if(camMode == 0)
         {
             ThirdPersonCam.SetActive(true);
@@ -39,7 +46,7 @@ public class CameraChanger : MonoBehaviour
             ThirdPersonCam.SetActive(false);
         }
     }
-    private void OnDisable()
+    void OnDisable()
     {
         StopAllCoroutines();
     }

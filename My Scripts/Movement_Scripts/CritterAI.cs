@@ -9,10 +9,11 @@ namespace LowPoly.Character
 {
     public class CritterAI : MonoBehaviour
     {
+        Transform myTransform;
         Animator m_animator;
         public NavMeshAgent m_Agent;
         int layerMask = -1;
-        public GameObject player;
+        public Transform player;
         public float runAwayDistance = 4f;
         public float wanderRadius = 20f;
         public float wanderTimer = 3f;
@@ -23,19 +24,18 @@ namespace LowPoly.Character
         AudioSource m_audioSource;
         public bool doWander = true;
 
-        private void OnEnable()
+        void OnEnable()
         {
             timer = wanderTimer;
+            myTransform = transform;
         }
-        private void Start()
+        void Start()
         {
-            player = GameObject.FindWithTag("Player");
             m_audioSource = GetComponent<AudioSource>();
             m_Agent = GetComponent<NavMeshAgent>(); 
             m_animator = GetComponent<Animator>();
         }
-
-        private bool IsNavMeshMoving
+        bool IsNavMeshMoving
         {
             get
             {
@@ -43,8 +43,9 @@ namespace LowPoly.Character
             }
         }
 
-        void Update()
+        void LateUpdate()
         {
+            //Debug.Log("Im still moving");
             if (doWander)
             {
                 if (IsNavMeshMoving)
@@ -56,13 +57,13 @@ namespace LowPoly.Character
                     m_animator.SetBool("walk", false);
                 }
                 timer += Time.deltaTime;
-                //Calculate our distance from the player every frame
-                float distance = Vector3.Distance(transform.position, player.transform.position);
+                //Calculate our distance from the player after every Update frame
+                float distance = Vector3.Distance(myTransform.position, player.position);
                 if (distance < runAwayDistance)
                 {
                     isWanderingAround = false;
-                    Vector3 dirToPlayer = transform.position - player.transform.position;
-                    Vector3 newPositionToRunTo = transform.position + dirToPlayer;
+                    Vector3 dirToPlayer = myTransform.position - player.position;
+                    Vector3 newPositionToRunTo = myTransform.position + dirToPlayer;
 
                     //when we disable this
                     m_Agent.SetDestination(newPositionToRunTo);
@@ -75,7 +76,7 @@ namespace LowPoly.Character
                 if (isWanderingAround && timer >= wanderTimer)
                 {
                     //Debug.Log("time.deltaTime timer is greater than or equal to wander timer");
-                    WanderAround(transform.position);
+                    WanderAround(myTransform.position);
                     timer = 0;
                 }
             }

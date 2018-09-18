@@ -28,11 +28,11 @@ public class QuestGiver : NPC_Behaviors
             //UNDER CONSTRUCTION
             Debug.Log("I am acknowledging i am needed in another quest");
         }
-        //If I am the QuestTurnInPoint of another QuestGiver's Quest and the Quest is Completed...
+        //If I am the QuestTurnInPoint of another QuestGiver's Quest and that Quest from other is Completed...
         else if(amTurnInPoint)
         {
+            //TODO, the next conversation needs to load automatically after a conversation-5
             Debug.Log("I am acknowledging i am the turn in point of another quest");
-            //Have conversation to acknowledge that (will drop out to base.Interact)
         }
 
         //Then choose between the below choices
@@ -92,15 +92,15 @@ public class QuestGiver : NPC_Behaviors
      */
     void InformQuestTurnInPoint()
     {
-        if (Quest.QuestTurnInPoint.name != "Bird") //the bird is special for testing purposes
+        if (Quest.QuestTurnInPoint.name != "Bird") //the bird is special => he dies and never comes back.
         {
             QuestGiver target = Quest.QuestTurnInPoint.GetComponent<QuestGiver>();
-            if (target.Quest != null && this.Quest.QuestStatus) //if the target has a quest to give && the assigning QuestGiver's quest is complete
+            if (target.Quest != null && this.Quest.QuestStatus) //if the target has a quest to give && the assigning QuestGiver's quest is complete(just needs to be turned in)
             {
                 string questTurnInPointName = Quest.QuestTurnInPoint.name;
                 GameObject questTurnInPointGo = Quest.QuestTurnInPoint.gameObject;
 
-                //Below will construct the path of the Conversation_NAME-5
+                //Below will construct the path of the Conversation_NAME-5 which acknowledges that this is the turn in point of another's completed quest
                 string result = StringHelperClass.ConstructConversationPath(questTurnInPointName);
                 //Below will load a QuestGiver's (that is the QuestTurnInPoint of this Quest) 
                 //Conversation_NAME-5, 

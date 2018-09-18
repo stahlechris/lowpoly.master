@@ -1,6 +1,6 @@
 ﻿public class DiscoveryGoal : QuestGoalBaseClass
 {
-    const int numDiscoveries = 14;
+    const int numDiscoveries = 15;
     public string[] DiscoveredArea = new string[numDiscoveries];
 
     public DiscoveryGoal()

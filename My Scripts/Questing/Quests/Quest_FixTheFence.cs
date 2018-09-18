@@ -17,8 +17,8 @@ public class Quest_FixTheFence : Quest
             "He knows a computer programmer sure oughtta be able to fix a fence." +
             "Gather the wood and hammer and get it over with so you can get off this island." +
             "Ed said his brother, Ip, usually 'borrows' his hammer. Ip will probably have some wood too.";
-        QuestStartPoint = GameObject.Find("Ed").transform;
-        QuestTurnInPoint = GameObject.Find("Ed").transform;
+        QuestStartPoint = transform.parent;
+        QuestTurnInPoint = transform.parent;
         //QuestReward = GameObject.Find("EdHammer");//can choose a weapon off of his weapon rack
         QuestReward = null;
         QuestStatus = false;

@@ -17,6 +17,7 @@ namespace LowPoly.Character
         [SerializeField] float m_GroundCheckDistance = 0.1f;
 
         //GameObject m_ParticleSystem;
+        Transform m_Transform;
         Rigidbody m_Rigidbody;
         Animator m_Animator;
         public bool m_IsGrounded;
@@ -33,6 +34,7 @@ namespace LowPoly.Character
         }
         void Start()
         {
+            m_Transform = transform;
             m_Animator = GetComponent<Animator>();
             m_Rigidbody = GetComponent<Rigidbody>();
             //m_ParticleSystem = GameObject.FindGameObjectWithTag("DustSteps");
@@ -50,7 +52,7 @@ namespace LowPoly.Character
             {
                 move.Normalize();
             }
-            move = transform.InverseTransformDirection(move);
+            move = m_Transform.InverseTransformDirection(move);
             CheckGroundStatus();
             move = Vector3.ProjectOnPlane(move, m_GroundNormal);
             m_TurnAmount = Mathf.Atan2(move.x, move.z);
@@ -114,7 +116,7 @@ namespace LowPoly.Character
             Vector3 airMoveDirection = Vector3.up;
             airMoveDirection.x = CrossPlatformInputManager.GetAxis("Horizontal") * 6f;
             airMoveDirection.z = CrossPlatformInputManager.GetAxis("Vertical") * 6f;
-            airMoveDirection = transform.TransformDirection(airMoveDirection);
+            airMoveDirection = m_Transform.TransformDirection(airMoveDirection);
 
             // apply extra gravity from multiplier: default is 0,-9.81
             Vector3 extraGravityForce = (Physics.gravity * m_GravityMultiplier) - Physics.gravity;
@@ -144,7 +146,7 @@ namespace LowPoly.Character
         {
             // help the character turn faster (this is in addition to root rotation in the animation)
             float turnSpeed = Mathf.Lerp(m_StationaryTurnSpeed, m_MovingTurnSpeed, m_ForwardAmount);
-            transform.Rotate(0, m_TurnAmount * turnSpeed * Time.deltaTime, 0);
+            m_Transform.Rotate(0, m_TurnAmount * turnSpeed * Time.deltaTime, 0);
         }
 
 
@@ -168,11 +170,11 @@ namespace LowPoly.Character
             RaycastHit hitInfo;
 #if UNITY_EDITOR
             // helper to visualise the ground check ray in the scene view
-            Debug.DrawLine(transform.position + (Vector3.up * 0.1f), transform.position + (Vector3.up * 0.1f) + (Vector3.down * m_GroundCheckDistance));
+            Debug.DrawLine(m_Transform.position + (Vector3.up * 0.1f), m_Transform.position + (Vector3.up * 0.1f) + (Vector3.down * m_GroundCheckDistance));
 #endif
             // 0.1f is a small offset to start the ray from inside the character
             // it is also good to note that the transform position in the sample assets is at the base of the character
-            if (Physics.Raycast(transform.position + (Vector3.up * 0.1f), Vector3.down, out hitInfo, m_GroundCheckDistance))
+            if (Physics.Raycast(m_Transform.position + (Vector3.up * 0.1f), Vector3.down, out hitInfo, m_GroundCheckDistance))
             {
                 m_GroundNormal = hitInfo.normal;
                 m_IsGrounded = true;

@@ -28,9 +28,9 @@ public class InventoryItemBase : MonoBehaviour
     protected HUD hud;
 
     public AudioClip pickupSound;
-    AudioSource audioSource;
+    //AudioSource audioSource;
 
-    private void Start()
+    void Start()
     {
         hud = FindObjectOfType<HUD>();
     }
@@ -55,7 +55,7 @@ public class InventoryItemBase : MonoBehaviour
      * It will 
      */
     public virtual void OnDrop()
-    {//why raycast why god why
+    {
         RaycastHit hit = new RaycastHit();
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out hit, 1000))
@@ -69,6 +69,7 @@ public class InventoryItemBase : MonoBehaviour
 
     public virtual void OnPickup()
     {
+        //Instantiate a temporary audiosource on the object long enough for the clip to play, then destroy the temporary audiosource
         AudioSource.PlayClipAtPoint(pickupSound, transform.position);
         //Get rid of the rigidbody on the item we pick up. if it has one
         Destroy(gameObject.GetComponent<Rigidbody>());

@@ -30,7 +30,7 @@ public class EnableObjectsBasedOnDistance : MonoBehaviour
     #endregion 
     //How often (sec) do we check the player's distance?
     [Tooltip("How often the script checks the target's position in seconds")]
-    public float timer;//Ex:I check every 3 seconds
+    public float timer;//Ex:I check every 3 seconds...
     /*Activate this variable if you want to check particle duration rather than emission count
     //How long does it take for your particleFX to cover what you want hidden?
     //[Tooltip("How long it takes your ParticleSystem to cover what you want hidden?")]
@@ -48,6 +48,7 @@ public class EnableObjectsBasedOnDistance : MonoBehaviour
     [Tooltip("Add Meters to your particleFx's forward position you want this behavior to distance check from")]
     public float particleForwardPadding;//Ex. I set mine at 3
     #region Internal Variables
+    private Transform myTransform;
     //Is the resource-intensive object on or off?
     internal bool objectOn = true;
     //Variable to reset the timer
@@ -63,8 +64,10 @@ public class EnableObjectsBasedOnDistance : MonoBehaviour
 
     void Start()
     {
+        myTransform = transform;
         time = timer;
     }
+
     internal void Update()
     {
         if (doBehavior)
@@ -86,7 +89,7 @@ public class EnableObjectsBasedOnDistance : MonoBehaviour
     internal void CheckDistanceAndParticles()
     {
         //Check player's distance from the blocking particleFx
-        var relativePoint = transform.InverseTransformPoint(target.position);
+        var relativePoint = myTransform.InverseTransformPoint(target.position);
         /* In my case, negative numbers occur when my target is behind my blocking particleFX.
          * Use Debug.Log(relativePoint) to check your needed x,y,z values ahead and behind 
          */
@@ -94,14 +97,14 @@ public class EnableObjectsBasedOnDistance : MonoBehaviour
         if (relativePoint.y < particleForwardPadding)
         {
             behindBlocker = true;
-            //Debug.Log("I am behind or near particles, no need to check if i should deactivate obj);
+            //Debug.Log("Player is behind or near particles, no need to check if i should deactivate obj);
         }
         else
         {
             //Target is in front of the blocking particles...
             behindBlocker = false;
             //Now check which way target is facing
-            Vector3 dirFromAtoB = (transform.position - target.position).normalized;
+            Vector3 dirFromAtoB = (myTransform.position - target.position).normalized;
             float dot = Vector3.Dot(dirFromAtoB, target.forward);
             //Debug.Log(dot + " dot vs forwardAngle  " + forwardAngle);
             if (dot < forwardAngle)
@@ -119,11 +122,15 @@ public class EnableObjectsBasedOnDistance : MonoBehaviour
                 isFacingObject = true;
             }
         }
+
+        //TODO: Think about changing the logic to turn off the water if we ar3e inside the zone,
+        //but camera is looking directly away from it. - Sept. 13, 2018
+
         //Don't turn off demanding object if target near or behind particleFX
         if (!behindBlocker)
         {
             //Get distance from me to target
-            float currentDistance = Vector3.Distance(transform.position, target.position);
+            float currentDistance = Vector3.Distance(myTransform.position, target.position);
             if (currentDistance > minDistance)
             {
                 if (particles.particleCount > particleCount)
@@ -154,9 +161,20 @@ public class EnableObjectsBasedOnDistance : MonoBehaviour
                     if (!objectOn)
                     {
                         ActivateResourceIntensiveObject(true); //Single
+
+                        //Also stop playing the blocking particleFX if the player isn't looking at it.
+                        particles.Stop();
+
                         //ActivateResourceIntensiveObjects(true); //Multiple[]
                         /*Debug.Log("target within min distance && target isFacing " +
                               "me! Activating object");*/
+                    }
+                }
+                else
+                {
+                    if(!particles.isPlaying)
+                    {
+                        particles.Play();
                     }
                 }
             }

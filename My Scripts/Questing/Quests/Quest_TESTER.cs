@@ -13,7 +13,7 @@ public class Quest_TESTER : Quest
         QuestName = "Test Quest";
         QuestDescription = "This is a test for a collection goal";
         QuestStartPoint = null;
-        QuestTurnInPoint = GameObject.Find("Bird").transform;
+        QuestTurnInPoint = transform.parent;
         QuestReward = null;
         QuestStatus = false;
         QuestGoal.Add(new CollectionGoal(this, "Bird","Bird",false,"testItem",0,2));

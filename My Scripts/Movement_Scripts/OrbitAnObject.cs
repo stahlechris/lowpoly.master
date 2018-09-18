@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class OrbitAnObject : MonoBehaviour 
 {
+    Transform m_Transform;
     public GameObject sphere;
     public Transform center;
     public Vector3 axis = Vector3.up;
@@ -14,16 +15,17 @@ public class OrbitAnObject : MonoBehaviour
 
 	void Start () 
     {
+        m_Transform = transform;
         //sphere = transform.Find("RotationPoint").GetComponent<GameObject>();
         center = sphere.transform;
-        transform.position = (transform.position - center.position).normalized * radius + center.position;
+        m_Transform.position = (m_Transform.position - center.position).normalized * radius + center.position;
 	}
 
     private void FixedUpdate()
     {
-        transform.RotateAround(center.position, axis, rotationSpeed * Time.deltaTime);
-        desiredPosition = (transform.position - center.position).normalized * radius + center.position;
-        transform.position = Vector3.MoveTowards(transform.position, desiredPosition, Time.deltaTime * radiusSpeed );
+        m_Transform.RotateAround(center.position, axis, rotationSpeed * Time.deltaTime);
+        desiredPosition = (m_Transform.position - center.position).normalized * radius + center.position;
+        m_Transform.position = Vector3.MoveTowards(m_Transform.position, desiredPosition, Time.deltaTime * radiusSpeed );
 
     }
 

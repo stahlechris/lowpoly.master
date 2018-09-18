@@ -4,7 +4,8 @@ public class Quest_HisEndlessBody : Quest
 {
     void OnEnable()
     {
-        Quest_ID = 3;
+        GameObject.FindWithTag("Cauldron").GetComponent<Cauldron>().CanCook = true;
+        Quest_ID = QuestCollectionCounter.AssignQuestID();
         QuestType = new QuestType[]
         {
             global::QuestType.CollectionGoal
@@ -15,11 +16,11 @@ public class Quest_HisEndlessBody : Quest
             "Ironically the only thing that can save him is more shrooms." +
             "Carl more or less asked you to find some nearby mushrooms and make" +
             "a detox tea with them using his cauldron. ";
-        QuestStartPoint = GameObject.Find("Carl").transform;
-        QuestTurnInPoint = GameObject.Find("Carl").transform;
+        QuestStartPoint = transform.parent;
+        QuestTurnInPoint = transform.parent;
         QuestReward = null;
         QuestStatus = false;
-        QuestGoal.Add(new CollectionGoal(this, "Carl", "Carl", false, "Detox Tea", 0, 1));
+        QuestGoal.Add(new CollectionGoal(this, "Carl", "Carl", false, "Eternity Potion", 0, 1));
         QuestGoal.ForEach(g => g.Init());
     }
 }

@@ -50,7 +50,7 @@ namespace LowPoly.Character //only characters have health
             //m_AudioSource = GetComponent<AudioSource>(); //death & hit noises
             Invoke(SETUP_HEALTH_SYSTEM, 1.5f);
         }
-        void Update()
+        void LateUpdate()//change this later to Update when/if its a problem
         {//durr im a computer, i have to check if im alive before i do anything
             if(m_CurrentHP < 1 && alive)
             {

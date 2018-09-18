@@ -18,7 +18,7 @@ public class Quest_ExploreTheIsland : Quest
         QuestTurnInPoint = null;
         QuestReward = null;//You can talk to Pers now.
         QuestStatus = false;
-        QuestGoal.Add(new DiscoveryGoal(this, false, 0, 14, "island"));
+        QuestGoal.Add(new DiscoveryGoal(this, false, 0, 15, "island"));
         QuestGoal.ForEach(g => g.Init());
         StartCoroutine(LateStart());
 	}

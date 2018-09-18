@@ -1,56 +1,70 @@
 ﻿using UnityEngine;
 
-namespace RPG.CameraUI
+namespace LowPoly.CameraUI
 {
     public class CameraArmFollow : MonoBehaviour
     {
+        Transform myTransform;
+        #region CONST STRING FINALS
         const string PLAYER_TAG = "Player";
         const string MouseY = "Mouse Y";
         const string MouseX = "Mouse X";
         const string XboxHorizontal = "XboxHorizontal";
         const string XboxVertical = "XboxVertical";
-        //CameraChanger cameraChanger;
-        GameObject player;
-        private float X;
-        private float Y;
+#endregion
+        public Transform player;
 
-        private float X2;
-        private float Y2;
+        float X;
+        float Y;
 
+        float X2;
+        float Y2;
+
+        void Awake()
+        {
+            //cache transform to eliminate extra step
+            myTransform = transform;
+        }
         void Start()
         {
-            player = GameObject.FindGameObjectWithTag(PLAYER_TAG);
+            //player = GameObject.FindGameObjectWithTag(PLAYER_TAG);
             //cameraChanger = GetComponent<CameraChanger>();
             //Debug.Log("Camera Follow script found: " + player.name); this was my first debug message!!!!they grow up so fast
-
         }
 
         void LateUpdate()
         {
-            this.transform.position = player.transform.position; //lock cam to player
-            //this.transform.rotation = player.transform.rotation; 
+            //lock cam to player every frame-end
+            myTransform.position = player.position;
             RotateCameraIfControlAndClickDown();
-            RotateCameraIfRightThumbstick();    //these two let the player rotate the camera
+            RotateCameraIfRightThumbstick();
         }
 
 
         void RotateCameraIfControlAndClickDown()
         {
-            if (Input.GetMouseButton(0) && Input.GetKey(KeyCode.LeftControl)) //if contrl + click
+            if (!Global.HAVING_A_CONVERSATION)
             {
-                transform.Rotate(new Vector3(-Input.GetAxis(MouseY) * 3.5f, Input.GetAxis(MouseX) * 3.5f, 0));
-                X = transform.rotation.eulerAngles.x;
-                Y = transform.rotation.eulerAngles.y;
-                transform.rotation = Quaternion.Euler(X, Y, 0);
+                if (Input.GetMouseButton(0) && Input.GetKey(KeyCode.LeftControl)) //if contrl + click
+                {                                                       //sensitivity             //sensitivity
+                    myTransform.Rotate(new Vector3(-Input.GetAxis(MouseY) * 3.5f, Input.GetAxis(MouseX) * 3.5f, 0));
+                    X = myTransform.rotation.eulerAngles.x;
+                    Y = myTransform.rotation.eulerAngles.y;
+                    myTransform.rotation = Quaternion.Euler(X, Y, 0);
+                }
             }
         }
 
+
         void RotateCameraIfRightThumbstick()
         {
-            transform.Rotate(new Vector3(-Input.GetAxis(XboxHorizontal) * 3.5f, Input.GetAxis(XboxVertical) * 3.5f, 0));
-            X2 = transform.rotation.eulerAngles.x;
-            Y2 = transform.rotation.eulerAngles.y;
-            transform.rotation = Quaternion.Euler(X2, Y2, 0);
+            if (Global.XBOX_CONTROLLER_PLUGGED_IN)
+            {
+                myTransform.Rotate(new Vector3(-Input.GetAxis(XboxHorizontal) * 3.5f, Input.GetAxis(XboxVertical) * 3.5f, 0));
+                X2 = myTransform.rotation.eulerAngles.x;
+                Y2 = myTransform.rotation.eulerAngles.y;
+                myTransform.rotation = Quaternion.Euler(X2, Y2, 0);
+            }
         }
     }
 }

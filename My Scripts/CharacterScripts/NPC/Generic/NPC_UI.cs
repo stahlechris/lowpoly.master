@@ -4,21 +4,26 @@ using System.Collections;
 
 public class NPC_UI : MonoBehaviour
 {
+    Transform m_Transform;
     NPC_Behaviors myNPCbehaviors;
     [SerializeField] GameObject canvasPrefab;
-    public Image[] questIcon; //0 => ! | 1 => ?
+    public Image[] questIcon; //0 => "!" | 1 => "?"...TODO 2 => "..." 3 => "?.."(in progress) 
     Camera cameraToLookAt;
     public int id;
+    bool LookAt{ get; set; }
+    bool HasQuestIconEnabled { get; set; }
     /*
      * If Quaternion.identity: the object keeps the same rotation as the prefab. 
      * If transform.rotation: the object's rotation is combined with the  prefab's
      */
     void Start()
     {
-        //Debug.Log(this + "called start");
+        m_Transform = transform;
+        LookAt = true;
         cameraToLookAt = Camera.main;
-        Instantiate(canvasPrefab, transform.position, Quaternion.identity, transform);
+        Instantiate(canvasPrefab, m_Transform.position, Quaternion.identity, m_Transform);
         //hud = FindObjects.HUD;
+        HasQuestIconEnabled = true;
         questIcon = GetComponentsInChildren<Image>();
         myNPCbehaviors = GetComponentInParent<NPC_Behaviors>();
         DialogueEvents.OnDialogueStart += DialogueEvents_OnDialogueStart;
@@ -26,9 +31,14 @@ public class NPC_UI : MonoBehaviour
 
         questIcon[1].enabled = false; //Unity can't be inactive gameobjects, so both of them start on and we have to turn one off.
     }
+
     void LateUpdate()
     {
-        transform.LookAt(cameraToLookAt.transform);
+        if (LookAt && HasQuestIconEnabled)
+        {
+            //don't do this if we are in a conversation
+            m_Transform.LookAt(cameraToLookAt.transform);
+        }
     }
 
     /*There is a sequential order of who receives notice of the event first.
@@ -39,6 +49,8 @@ public class NPC_UI : MonoBehaviour
      */
     void DialogueEvents_OnDialogueStart(Dialogue dialogueItem)
     {
+        //don't calculate lookAt direction every lateUpdate frame if in convo
+        LookAt = false;
         //if they're talking to me, get questIcon out of their face 
         if (dialogueItem.dialogueID == myNPCbehaviors.GetComponentInChildren<Dialogue>().dialogueID)
         {
@@ -52,12 +64,13 @@ public class NPC_UI : MonoBehaviour
     IEnumerator WaitThenDisableQuestIcon()
     {
         yield return new WaitForEndOfFrame();
-        Debug.Log("Respondin to an OnDialogueStart, NPC_UI disabled ! and ?");
+        //Debug.Log("Responding to an OnDialogueStart, NPC_UI disabled ! and ?");
         questIcon[0].enabled = false;
         questIcon[1].enabled = false; 
     }
     void DialogueEvents_OnDialogueEnd(Dialogue dialogueItem)//TODO -> if you plan on keeping the stupid fucking bird, Give him his own component so you can just delete him after hes done
     {
+        LookAt = true;
         //Debug.Log(this + " heard dialogue was over");
         //Debug.Log(dialogueItem.dialogueID == myNPCbehaviors.GetComponentInChildren<Dialogue>().dialogueID);
 
@@ -70,7 +83,7 @@ public class NPC_UI : MonoBehaviour
                 DialogueEvents.OnDialogueStart += DialogueEvents_OnDialogueStart;
                 DialogueEvents.OnDialogueEnd -= DialogueEvents_OnDialogueEnd;
             }
-
+            CheckIfQuestIconEnabled();
             //we need to check if our QuestGiver is a turnInPoint and has a quest to give
             //TODO we need to also check if the player has completed the Quest,
             //If they haven't completed the quest, lets put up a grey questionMark 
@@ -83,7 +96,17 @@ public class NPC_UI : MonoBehaviour
             }
         }
     }
-
+    void CheckIfQuestIconEnabled()//questIcons are Images
+    {//This is used to determine if LookAt() is executed every LateUpdate()
+        if (!questIcon[0].isActiveAndEnabled && !questIcon[1].isActiveAndEnabled)
+        {
+            HasQuestIconEnabled = false;
+        }
+        else
+        {
+            HasQuestIconEnabled = true;
+        }
+    }
     public void ChangeQuestStatus(string icon, bool active)
     {
         if (icon != null)

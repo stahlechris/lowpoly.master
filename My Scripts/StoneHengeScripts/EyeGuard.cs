@@ -25,7 +25,7 @@ public class EyeGuard : Interactable
     public Animator animator;
     public ParticleSystem particles;
 
-    private void OnTriggerEnter(Collider other)
+    void OnTriggerEnter(Collider other)
     {
         if (other.name == PLAYER_NAME && !hasEntered)
         {
@@ -35,13 +35,12 @@ public class EyeGuard : Interactable
                 player = other.GetComponent<PlayerController>();
             }
 
-
             player.m_PersonRequestingToBeSpokenWith = this.gameObject;
             player.hud.OpenMessagePanel(this.gameObject, null);
         }
     }
 
-    private void OnTriggerExit(Collider other)
+    void OnTriggerExit(Collider other)
     {
         if (other.name == PLAYER_NAME)
         {
@@ -103,7 +102,7 @@ public class EyeGuard : Interactable
     }
    
 
-    private void OnDisable()
+    void OnDisable()
     {
         StopAllCoroutines();
     }

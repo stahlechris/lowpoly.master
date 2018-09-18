@@ -16,7 +16,7 @@ public class EnemyUI : MonoBehaviour
     {
         cameraToLookAt = Camera.main;
         Instantiate(canvasPrefab, transform.position, Quaternion.identity, transform);
-        hud = GameObject.Find("HUD").GetComponent<HUD>();
+        hud = ObjectFinder.HUD;
 	}
     void LateUpdate () 
     {
