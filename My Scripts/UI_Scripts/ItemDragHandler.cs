@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
 /*
@@ -9,7 +7,11 @@ using UnityEngine.EventSystems;
  */
 public class ItemDragHandler : MonoBehaviour, IDragHandler, IEndDragHandler
 {
-
+    Transform myTransform;
+    private void Start()
+    {
+        myTransform = transform;
+    }
     public InventoryItemBase Item 
     { 
         get; 
@@ -18,12 +20,12 @@ public class ItemDragHandler : MonoBehaviour, IDragHandler, IEndDragHandler
 
     public void OnDrag(PointerEventData eventData)
     {
-        transform.position = Input.mousePosition;
-        Debug.Log("Draggin..." + transform.position);
+        myTransform.position = Input.mousePosition;
+        Debug.Log("Dragging..." + myTransform.position);
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        transform.localPosition = Vector3.zero;
+        myTransform.localPosition = Vector3.zero;
     }
 }

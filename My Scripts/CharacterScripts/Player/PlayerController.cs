@@ -77,10 +77,11 @@ namespace LowPoly.Character
                     }
                 }
 
-                if (m_AutoRunPressed = CrossPlatformInputManager.GetButtonDown("AutoRun"))
-                {
-                    m_isAutoRunning = !m_isAutoRunning;
-                }
+                //UNDER CONSTRUCTION
+                //if (m_AutoRunPressed = CrossPlatformInputManager.GetButtonDown("AutoRun"))
+                //{
+                //    m_isAutoRunning = !m_isAutoRunning;
+                //}
 
                 //check if trying to interact with an npc or an item.
                 if (CrossPlatformInputManager.GetButtonDown("Interact"))
@@ -184,7 +185,9 @@ namespace LowPoly.Character
                 /// taking rotation into account.
                 /// </summary>
 
+                //AUTORUN UNDER CONSTRUCTION
 
+                //TODO: get rid of this autorun shit
                 //if autoRun is true AND theres no input coming from the left stick/wsad/keys
                 if (m_isAutoRunning && Math.Abs(CrossPlatformInputManager.GetAxis("Horizontal"))
                     + Math.Abs(CrossPlatformInputManager.GetAxis("Vertical")) < 2 * float.Epsilon)
@@ -209,6 +212,7 @@ namespace LowPoly.Character
         //TODO: Think about below
         void SetPlayerPositionForConversation()
         {
+            //don't set positioning with eyeguards or helpful fish
             if(m_PersonRequestingToBeSpokenWith.CompareTag("Eyeguard"))
             {//Right now the rotation is all off when Liam interacts becasue the objects orientation and local vs world is off
                 /* Interacting with the eyeguard might or might not happen only once : 
@@ -219,10 +223,12 @@ namespace LowPoly.Character
                  * 3. Eyeguard UI needs to display an angry red "!?" symbol above head.
                  * 4. We need to shutoff this camera and enable the stonehengeCam....
                  */
-                animator.SetTrigger("ReachForward");
+                //animator.SetTrigger("ReachForward");
+
             }
-            else if (!m_PersonRequestingToBeSpokenWith.CompareTag("Tome") || !m_PersonRequestingToBeSpokenWith.CompareTag("HelpfulFish")) 
-                //we dont set positioning for conversations with tomes..because we HATE tomes (and helpful fishes).
+
+            else if (!m_PersonRequestingToBeSpokenWith.CompareTag("Tome")) 
+                //we dont set positioning for conversations with tomes..because we HATE tomes
             {
                 //smoothly rotate the camera to the speaker
                 thirdPersonCam.RotateCamera(m_PersonRequestingToBeSpokenWith.transform);
@@ -328,11 +334,14 @@ namespace LowPoly.Character
             inventory.RemoveItem(mItemIAmHolding);
 
             Rigidbody rbItem = itemToDrop.AddComponent<Rigidbody>();
+
             if (rbItem != null)
             {
                 animator.SetTrigger(DROP_ITEM);   
 
-                rbItem.AddForce(transform.up * 2.0f, ForceMode.Impulse);
+                //toss with enough force to not trigger pickup message
+                rbItem.AddForce(transform.up * 2.75f, ForceMode.Impulse);
+                rbItem.AddForce(transform.forward * 2f, ForceMode.Impulse);
 
                 //we need a delay so the item doesn't just hang in the air
                 Invoke("DestroyDropItem", 0.6f);
@@ -342,6 +351,12 @@ namespace LowPoly.Character
         {
             Destroy((mItemIAmHolding as MonoBehaviour).GetComponent<Rigidbody>());
             mItemIAmHolding = null;
+            mItemRequestingToBeCollected = null;
+
+            if (hud.IsMessagePanelOpened)
+            {
+                hud.CloseMessagePanel();
+            }
         }
     }
 }

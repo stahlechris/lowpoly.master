@@ -10,31 +10,42 @@ public class Discovery : MonoBehaviour
     public int questID_AssociatedWithDiscovery;
     bool hasDiscoveredArea;
     bool hasStartedTimer;
-    Collider myCollider;
+    //Collider myCollider;
     string playerName = "Liam";
+
+    bool WaitedForLoad { get; set; }
 
     void Start()
     {
         areaDiscoveredName = this.name;
-        myCollider = GetComponent<Collider>();
+        //myCollider = GetComponent<Collider>();
+        StartCoroutine(WaitForLoad());
     }
 
     void OnTriggerEnter(Collider other)
     {
-        if (!hasStartedTimer && other.name == playerName)
+        if (WaitedForLoad)
         {
-            Debug.Log("Liam entered  " + this);
-            cullingSystem.InformOnTrigger(true, this.areaDiscoveredName);
-
-            if (!hasDiscoveredArea)
+            if (!hasStartedTimer && other.name == playerName)
             {
-                StartCoroutine(StartTimer());
+                //Debug.Log("Liam entered  " + this);
+                cullingSystem.InformOnTrigger(true, this.areaDiscoveredName);
+
+                if (!hasDiscoveredArea)
+                {
+                    StartCoroutine(StartTimer());
+                }
             }
         }
     }
+    IEnumerator WaitForLoad()
+    {
+        yield return new WaitForSeconds(2); //arbitrary amount of seconds to wait for other components
+        WaitedForLoad = true;
+    }
     IEnumerator StartTimer()
     {
-        float countDown = 5f;
+        float countDown = 8f;
         hasStartedTimer = true;
 
         while (countDown > 0)
@@ -64,7 +75,7 @@ public class Discovery : MonoBehaviour
         if (other.name == playerName )
         {
             cullingSystem.InformOnTrigger(false, this.areaDiscoveredName);
-            Debug.Log("Liam left " + this);
+            //Debug.Log("Liam left " + this);
             hasStartedTimer = false;
             StopAllCoroutines();
             if (hasDiscoveredArea)

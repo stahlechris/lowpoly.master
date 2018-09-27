@@ -27,6 +27,8 @@ public class ConversationGoal : QuestGoalBaseClass
         Quest.CheckGoals();
 
         CompletedGoal = true;
+        Quest.QuestCompletedAndTurnedIn = true;
+
         Terminate();
     }
 
@@ -59,6 +61,7 @@ public class ConversationGoal : QuestGoalBaseClass
     }
     public override void Terminate()
     {
+        Debug.Log(this + " Conversation goal stopped listening to dialogue events");
         base.Terminate();
         //unsubscribe from event, then in GameObject that holds the quest, destroy
         DialogueEvents.OnDialogueStart -= Handle_TestOnDialogueStart;

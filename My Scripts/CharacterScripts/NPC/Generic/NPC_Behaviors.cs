@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using LowPoly.Character;
 using System.Collections;
-using LowPoly.CameraUI;
 
 public class NPC_Behaviors : Interactable 
 {
@@ -10,7 +9,7 @@ public class NPC_Behaviors : Interactable
     public AudioSource audioSource;
     PlayerController player;
     public bool playerHasTalkedToMe = false;
-    [SerializeField]Dialogue my_Dialogue;
+    public Dialogue my_Dialogue;
     const string PLAYER_NAME = "Liam";
     bool hasEntered = false; //stop triggering OnTriggerEnter twice when you enter once
 
@@ -34,7 +33,7 @@ public class NPC_Behaviors : Interactable
             {
                 player = other.GetComponent<PlayerController>();
             }
-            //this must be here rather than interact because this operation takes a while
+            //this logic must be here rather than in Interact() because this operation is slow.
             if (conversationCam != null)
             {
                 if(audioSource!= null)
@@ -64,11 +63,19 @@ public class NPC_Behaviors : Interactable
 
     public override void Interact()
     {
-        //This is coming up null when you get the bird's journal quest idk why
         if (my_Dialogue != null)
         {
             Debug.Log("Interacted in NPC_Behaviors to HaveConversation()");
             my_Dialogue.HaveConversation();
+        }
+        else
+        {
+            Debug.Log("my_dialogue in NPC_Behaviors came up as null for some reason, if you want to get mad, take a look in the inspector - 100% sure it's not null at all." +
+                      "anyways...im fetching it again");       //Occasionally this comes up null, as if the base keyword is being ignored
+            my_Dialogue = GetComponentInChildren<Dialogue>();
+            //Debug.Log(my_Dialogue.name);
+            my_Dialogue.HaveConversation();
+
         }
     }
    

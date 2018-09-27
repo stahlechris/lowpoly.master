@@ -73,10 +73,10 @@ public class HUD : MonoBehaviour
 
     void Inventory_ItemRemoved(object sender, InventoryEventArgs e)
     {
-        Transform inventoryPanel = transform.Find("InventoryPanel");
+        Transform inventoryPanelTranform = inventoryPanel.transform;
         int index = -1;
 
-        foreach (Transform slot in inventoryPanel)
+        foreach (Transform slot in inventoryPanelTranform)
         {
             index++;
 
@@ -130,7 +130,7 @@ public class HUD : MonoBehaviour
     {
         FlashText();
         CrossOffQuestFromList(e.m_quest);
-        //TODO: quests need to be removed and all shifted upwards by one
+        //TODO: quests need to be removed and all shifted upwards by one....oh my god. the dreaded shifting of information code...i am ...not strong enough to do this as of sept 24...everything will break
     }
 
     void WriteQuestOnHUD(QuestBaseClass e)

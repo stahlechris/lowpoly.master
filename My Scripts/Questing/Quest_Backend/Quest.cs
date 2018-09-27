@@ -11,9 +11,13 @@ public class Quest : QuestBaseClass //todo why does this class exist, consider c
         {
             Debug.Log(this + " backend evaluated Goals as CompletedGoals == true from CheckGoals()");
             InformQuestGiverOfQuestStatus();
+
             //TODO we want the quest giver to call this after turning in quest
             //then we don't have to pass a reference to the playersQuestList on every quest
-            playersQuestList.RemoveQuestItem(this); 
+            Debug.Log("Quest removed " + this.name + "This will cross off the quest via an OnQuestRemoved event");
+            playersQuestList.RemoveQuestItem(this); //Here we remove the Quest from the QuestList, but there are still references to it in the UI. => TODO: decide if we want to keep the references to display "0/1 completed". Or we want to delete the references and just show "Completed"
+        
+        //TODO setp24. We are trying to not cross off the quest until it is turned in. Right now, when you collect all the mats, it crosses off before you can turn it in.
         }
     }
 

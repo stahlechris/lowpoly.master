@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections;
-using System;
 
 public class CarlsCage : MonoBehaviour 
 {
@@ -13,8 +12,7 @@ public class CarlsCage : MonoBehaviour
 
     private float rotSpeed;
 
-
-    void Start()
+    private void OnEnable()
     {
         DialogueEvents.OnDialogueStart += Handle_OnDialogueStart;
         DialogueEvents.OnDialogueEnd += Handle_OnDialogueEnd;
@@ -26,7 +24,6 @@ public class CarlsCage : MonoBehaviour
         {
             StartCoroutine(SlowlyRotateTowardsTarget());
             StartCoroutine(SlowlyRotateTowardsTargetTwo());
-
         }
     }
 
@@ -53,12 +50,12 @@ public class CarlsCage : MonoBehaviour
         float counter = 0;
         float duration = 2;
         float max = 0;
-        float min = -20;
+        float min = -50;
 
         float internalAngle = 0;
-        float speed = .2f;
+        float speed = 0.35f;
 
-        while (counter < duration)//currentl we are 360 spinning out of control
+        while (counter < duration)
         {
             counter += Time.deltaTime;
             internalAngle -= speed * Time.deltaTime;
@@ -78,11 +75,11 @@ public class CarlsCage : MonoBehaviour
 
         float counter = 0;
         float duration = 2;
-        float max = 0;
-        float min = -20;
+        float max = 20;
+        float min = -50;
 
         float internalAngle = 0;
-        float speed = .06f; //hacking this variable to get what I want...
+        float speed = 0.15f; //hacking this variable to get what I want...
 
         while (counter < duration)
         {

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using LowPoly.Character;
+using System;
 
 public class Cauldron : MonoBehaviour 
 {
@@ -8,17 +9,23 @@ public class Cauldron : MonoBehaviour
     public GameObject conversationCam;
     bool hasEntered;
     PlayerController player;
-    public bool CanCook { get; set; }
+    public bool CanCook;
+
+    #region Const Strings
+    const string PLAYER_TAG = "Player";
+    const string COOKING_MESSAGE = "- Press E to Cook -";
+    #endregion
+
 
     void OnTriggerEnter(Collider other)
     {
         if (CanCook)
         {
-            if (other.CompareTag("Player") && !hasEntered)
+            if (other.CompareTag(PLAYER_TAG) && !hasEntered)
             {
                 hasEntered = true;
 
-                if (player == null)
+                if (player == null) //is this a memory leak or is ok??
                 {
                     player = other.GetComponent<PlayerController>();
                 }
@@ -29,18 +36,21 @@ public class Cauldron : MonoBehaviour
                         //play their conversationMusic
                         audioSource.Play();
                     }
-                    //change to their cam
                     cameraChanger.FirstPersonCam = conversationCam;
                 }
                 player.m_PersonRequestingToBeSpokenWith = this.gameObject;
-                player.hud.OpenMessagePanel(this.gameObject, "- Press E to Cook -");
+                player.hud.OpenMessagePanel(this.gameObject, COOKING_MESSAGE);
             }
+        }
+        else
+        {
+            Debug.Log("Carl hasn't given you permission to use his cauldron yet!");
         }
     }
 
     void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Player") && player != null)
+        if (other.CompareTag(PLAYER_TAG) && player != null)
         {
             hasEntered = false;
 
@@ -49,6 +59,5 @@ public class Cauldron : MonoBehaviour
             player.alreadySpeaking = false;
         }
     }
-
 
 }

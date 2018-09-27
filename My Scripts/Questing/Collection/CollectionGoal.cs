@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Linq;
 public class CollectionGoal : QuestGoalBaseClass 
 {
     public string RequiredItemName { get; set; }
@@ -35,14 +36,12 @@ public class CollectionGoal : QuestGoalBaseClass
         inventory = GameObject.FindWithTag("Inventory").GetComponent<InventoryList>();
         CheckIfPlayerHasQuestItems();
         Evaluate();
-        //CheckIfQuestComplete();
-        //Above is crossed because following series of events will attempt to remove a quest that isnt in the quest log because this completes the quest before it even adds it
-        //I am thinking we just show that the quest is done, and then talk to the quest giver to complete the quest
+        CheckIfQuestComplete();
 
-        //if the player has ALL quest items, dont start listening
-        if (!Quest.QuestStatus)//this is failing, still subscribing
+        //if the player has ALL the quest items already, dont start listening
+        if (!Quest.QuestStatus)
         {
-            Debug.Log("This Collection goal needed to start listening to inventory added events " +
+          Debug.Log("This Collection goal needed to start listening to inventory added events " +
                       "because the inventory did not contain all the required quest items after searching");
             inventory.OnItemAdded += Handle_TestOnItemAdded;
             inventory.OnItemRemoved += Handle_TestOnItemRemoved;
@@ -54,6 +53,8 @@ public class CollectionGoal : QuestGoalBaseClass
         //Example. We have 2 baseballs required for this goal, this value should return 2.
         int numReqItemsInInventory = inventory.SearchInventory(RequiredItemName);
         Debug.Log("After searching for quest items, I found you already had " + numReqItemsInInventory + " " + RequiredItemName + "'s");
+
+
         //call this.CurrentAmount++ depending on the value of numReqItemsInInventory   
         for (int i = 0; i < numReqItemsInInventory;i++)
         {
@@ -65,9 +66,6 @@ public class CollectionGoal : QuestGoalBaseClass
         this.CurrentAmount++;
     }
 
-
-    //Both these handler methods are STILL listening after the quest completes
-
     void Handle_TestOnItemAdded(object sender, InventoryEventArgs e)
     {
         Debug.Log("collection goal heard item looted, checking if quest item");
@@ -78,12 +76,35 @@ public class CollectionGoal : QuestGoalBaseClass
             this.CurrentAmount++;
             Debug.Log(this.CurrentAmount + " must == " + this.RequiredAmount);
             Evaluate();
-            CheckIfQuestComplete();
+            Quest.QuestStatus = Quest.QuestGoal.All(g => g.CompletedGoal);
+            if (Quest.QuestStatus)
+            {
+                //Update turn in point's UI
+                switch(QuestTurnInPoint)
+                {
+                    case "Carl":
+                        ObjectFinder.Carl_UI.ChangeQuestStatus("?", true);
+                        break;
+                    case "Ip":
+                        ObjectFinder.Ip_UI.ChangeQuestStatus("?", true);
+                        break;
+                    case "Ed":
+                        ObjectFinder.Ed_UI.ChangeQuestStatus("?", true);
+                        break;
+                    case "Bird":
+                        ObjectFinder.Bird_UI.ChangeQuestStatus("?", true);
+                        break;
+                    default:
+                        Debug.Log("Can't find that turn in point. Preceeding to fuck everything up.");
+                        break;
+                }
+                Debug.Log("Changed ? to false from backend collection goal");
+            }
         }
     }
     void Handle_TestOnItemRemoved(object sender, InventoryEventArgs e)
     {
-        Debug.Log("collection goal heard item dropped, checking if quest item...ignore this if I was called because you turned in quest item");
+        Debug.Log("collection goal heard OnItemRemoved, checking if quest item...ignore this if I was called because you turned in a quest or are cooking/crafting");
         Debug.Log(e.m_Item.Name + " must equalequal " + this.RequiredItemName);
 
         if (e.m_Item.Name == this.RequiredItemName)
@@ -99,5 +120,6 @@ public class CollectionGoal : QuestGoalBaseClass
         //base.Terminate();
         inventory.OnItemAdded -= Handle_TestOnItemAdded;
         inventory.OnItemRemoved -= Handle_TestOnItemRemoved;
+        Debug.Log("Stopped listening to inventory events");
     }
 }

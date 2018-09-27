@@ -37,7 +37,7 @@ public class HelpfulFish : Interactable
         audioSource.Play();
         //"NOOOOO!!! HELPFULFISH - I LOVE YOU!!
         Animator anim = player.GetComponent<Animator>();
-        anim.SetTrigger("ReachingForward");
+        //anim.SetTrigger("ReachForward");
         InformSheepSphere(); //activates sheep again in scene.
         StartCoroutine(SayGoodbye(anim));
     }

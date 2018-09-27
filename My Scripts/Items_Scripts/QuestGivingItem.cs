@@ -10,6 +10,8 @@ public class QuestGivingItem : Item
         if (!hasUsed)
         {
             hasUsed = true;
+            quest.QuestGoal.ForEach(g => g.Init());
+
             QuestList questLog = ObjectFinder.QuestLog;
             questLog.AddQuestItem(quest);
             quest.transform.SetParent(questLog.transform);
@@ -18,7 +20,7 @@ public class QuestGivingItem : Item
         }
         else
         {
-            Debug.Log("You already used this item to start its quest");
+            Debug.Log("You already used this item to start its quest. Item will dissapear upon completion");
         }
 
         //The bird ate a bad mushroom and it killed him
@@ -26,9 +28,8 @@ public class QuestGivingItem : Item
 
     void InformQuestTurnInPoint()
     {
-
         QuestGiver target = quest.QuestTurnInPoint.GetComponent<QuestGiver>();
-        if (target.Quest != null) //if the target has a quest to give && the assigning QuestGiver's quest is complete
+        if (target.Quest != null) //if the target has a quest to give
         {
             string questTurnInPointName = quest.QuestTurnInPoint.name;
             GameObject questTurnInPointGo = quest.QuestTurnInPoint.gameObject;
@@ -44,6 +45,9 @@ public class QuestGivingItem : Item
 
             //...and update boolean value so he can act correctly
             target.amTurnInPoint = true;
+
+            //...and send him the Quest that this object is holding.
+            target.ForeignQuest = quest;
         }
 
     }

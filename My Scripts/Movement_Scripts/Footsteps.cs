@@ -6,6 +6,8 @@ namespace LowPoly.Character
 {
     public class Footsteps : MonoBehaviour
     {
+        public ThirdPerson_Camera mainCamera;
+
         //public PlayerController m_playerController;
         //public CustomMovement m_customMovement;
         public GameObject m_Footprints;
@@ -16,26 +18,24 @@ namespace LowPoly.Character
         public Rigidbody rb;
         private bool step = true;
         //float audioStepLengthWalk = 0.5f;
-        float stepLengthRun = 0.25f;
+        float stepLengthRun = 0.23f;
+        float stepLengthWater = 0.4f;
         float PARTICLE_DESTROY_DELAY = 0.35f;
-
+        const string WATER_TAG = "Water";
         //Vector3 spawnOffset = new Vector3()
+        bool HasSetCamera { get; set; }
         private void Awake()
         {
             m_AudioSource = GetComponent<AudioSource>();
             rb = GetComponent<Rigidbody>();
         }
-        private void Start()
-        {
-
-        }
 
         private void OnCollisionStay(Collision collision)
         {
-            if(step && rb.velocity.magnitude > 0.7f) //magnitude means && we moved
+            if(step && rb.velocity.magnitude > 0.75f) //magnitude means && we moved
             {
-                PlayFootstepNoise();
-                MakeFootstepDust();
+                PlayFootstepNoise(collision.collider);
+                //MakeFootstepDust(collision.collider);
             }
         }
 
@@ -46,12 +46,36 @@ namespace LowPoly.Character
             step = true;
         }
 
-        private void PlayFootstepNoise()
+        private void PlayFootstepNoise(Collider other)
         {
             m_AudioSource.volume = Random.Range(0.75f, 1f);
             m_AudioSource.pitch = Random.Range(0.75f, 1f);
-            m_AudioSource.PlayOneShot(m_Grass[0]);
-            StartCoroutine(WaitForFootstep(stepLengthRun));
+
+            if (other.CompareTag(WATER_TAG))
+            {
+                m_AudioSource.PlayOneShot(m_Water[0]);
+                StartCoroutine(WaitForFootstep(stepLengthWater));
+
+                if (!HasSetCamera)
+                {//don't let them look underwater...yet!
+                    HasSetCamera = true;
+                    mainCamera.YMinLimit = 0;
+                }
+            }
+            else
+            {
+
+                m_AudioSource.PlayOneShot(m_Grass[0]);
+                MakeFootstepDust();
+                StartCoroutine(WaitForFootstep(stepLengthRun));
+
+                if (HasSetCamera)
+                {//give max allowed rotation back
+                    HasSetCamera = false;
+                    mainCamera.YMinLimit = -20;
+                }
+            }
+
         }
 
 

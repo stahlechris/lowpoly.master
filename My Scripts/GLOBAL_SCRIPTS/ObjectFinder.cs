@@ -1,33 +1,86 @@
 ﻿using UnityEngine;
 using LowPoly.Character;
-public class ObjectFinder : MonoBehaviour 
-{
-    public static HUD HUD { get; set; }
 
-    const string PLAYER_NAME = "Liam";
-    public static GameObject PlayerGameObject { get; set; }
+public class ObjectFinder : MonoBehaviour
+{
+    #region Systems
+    public static HUD HUD { get; set; }
+    public static QuestList QuestLog { get; set; }
+    #endregion
+
+    #region PLAYER
+    public static GameObject PlayerGameObject;
     public static Transform PlayerTransform { get; set; }
     public static PlayerController PlayerController { get; set; }
     public static Rigidbody PlayerRigidBody { get; set; }
     public static Animator PlayerAnimator { get; set; }
+    #endregion
 
-    public static QuestList QuestLog { get; set; }
+    #region NPC's
+    public static Transform CarlTransform { get; set; }
+    public static Transform BirdTransform { get; set; }
+    public static Transform IpTransform { get; set; }
+    public static Transform EdTransform { get; set; }
+    #endregion
 
-	void Start () 
+    #region NPC's UI
+    public static NPC_UI Carl_UI { get; set; }
+    public static NPC_UI Bird_UI { get; set; }
+    public static NPC_UI Ip_UI { get; set; }
+    public static NPC_UI Ed_UI { get; set; }
+    #endregion
+
+    void Start()
     {
-        HUD = GameObject.Find("HUD").GetComponent<HUD>();
-        QuestLog = GameObject.Find("QuestLog").GetComponent<QuestList>();
-        PlayerGameObject = GameObject.Find(PLAYER_NAME);
+        #region Systems
+        HUD = GameObject.FindWithTag("HUD").GetComponent<HUD>();
+        //Debug.Log(this + " found HUD? => " + HUD);
+
+        QuestLog = GameObject.FindWithTag("QuestLog").GetComponent<QuestList>();
+        //Debug.Log(this + " found Questlist? => " + QuestLog);
+        #endregion
+
+        #region PLAYER
+        PlayerGameObject = GameObject.FindWithTag("Player");
+        //Debug.Log(this + " found Player's GO? => " + PlayerGameObject.name);
+
         PlayerController = PlayerGameObject.GetComponent<PlayerController>();
+        //Debug.Log(this + " found Player's controller? => " + PlayerController.name);
+
         PlayerTransform = PlayerGameObject.GetComponent<Transform>();
+
         PlayerRigidBody = PlayerGameObject.GetComponent<Rigidbody>();
+
+
         PlayerAnimator = PlayerGameObject.GetComponent<Animator>();
-	}
-   
+
+        #endregion
+
+        #region NPC's
+        CarlTransform = GameObject.FindWithTag("Carl").GetComponent<Transform>();
+        //Debug.Log(this + " found Carl's Transform? => " + CarlTransform.name);
+
+        BirdTransform = GameObject.FindWithTag("Bird").GetComponent<Transform>();
+        //Debug.Log(this + " found Bird's Transform? => " + BirdTransform.name);
+
+        IpTransform = GameObject.FindWithTag("Ip").GetComponent<Transform>();
+        //Debug.Log(this + " found Ip's Transform? => " + IpTransform.name);
+
+        EdTransform = GameObject.FindWithTag("Ed").GetComponent<Transform>();
+        //Debug.Log(this + " found Ed's Transform? => " + EdTransform.name);
+        #endregion
+
+        #region NPC's UI
+        Carl_UI = CarlTransform.GetComponentInChildren<NPC_UI>();
+        Bird_UI = BirdTransform.GetComponentInChildren<NPC_UI>();
+        Ip_UI = IpTransform.GetComponentInChildren<NPC_UI>();
+        Ed_UI = EdTransform.GetComponentInChildren<NPC_UI>();
+        #endregion
+
+    }
 
     void OnDisable()
     {
-     //do ineed to null these out???   
+        //do ineed to null these out???   
     }
-
 }

@@ -1,47 +1,30 @@
 ﻿using System.Collections;
 using UnityEngine;
-using LowPoly.Character;
 
-public class Bird : Interactable 
+public class Bird : MonoBehaviour 
 {
     const string PLAYER_NAME = "Liam";
-    PlayerController player;
-
     public GameObject canvas;
+    bool Sqwaaking { get; set; }
 
     void OnTriggerEnter(Collider other)
     {
         if (other.name == PLAYER_NAME)
         {
-            if (player == null)
-            {
-                player = other.GetComponent<PlayerController>();
-            }
-
-            player.m_PersonRequestingToBeSpokenWith = this.gameObject;
-            player.hud.OpenMessagePanel(this.gameObject, null);
+            StartCoroutine(ShowDescription());    
         }
     }
 
-    public override void Interact()
-    {
-        StartCoroutine(ShowDescription());    
-    }
 
     IEnumerator ShowDescription()
     {
-        canvas.SetActive(true);
-        yield return new WaitForSeconds(5);
-        canvas.SetActive(false);
-    }
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.name == PLAYER_NAME)
+        if (!Sqwaaking)
         {
+            Sqwaaking = true;
+            canvas.SetActive(true);
+            yield return new WaitForSeconds(3.5f);
             canvas.SetActive(false);
-            StopCoroutine(ShowDescription());
-            player.hud.CloseMessagePanel();
-            player.m_PersonRequestingToBeSpokenWith = null;
+            Sqwaaking = false;
         }
     }
 

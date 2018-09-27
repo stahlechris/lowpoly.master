@@ -43,9 +43,13 @@ public class GoToBetterPlace : MonoBehaviour
     }
     IEnumerator LootAppears(AudioSource itemAppears, ParticleSystem itemCloud)
     {
-        yield return new WaitForSeconds(4.1f);
+        yield return new WaitForSeconds(4.5f);
         itemAppears.Play();
         itemCloud.Play();
+        //This assumes 1 loot item that has its renderer & collider off at play time
+        GetComponentInChildren<MeshRenderer>().enabled = true;
+        GetComponentInChildren<Collider>().enabled = true;
+
         Destroy(this,5f);
     }
     void ActivateLootItems()

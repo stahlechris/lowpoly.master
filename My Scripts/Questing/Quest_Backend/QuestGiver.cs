@@ -5,6 +5,7 @@ public class QuestGiver : NPC_Behaviors
 {
     [SerializeField] string questGiver_ID; 
     public QuestBaseClass Quest;
+    public QuestBaseClass ForeignQuest;
     public NPC_UI questGiver_UI;
     public QuestList playersQuestLog;
     bool AssignedQuest { get; set; }
@@ -19,6 +20,10 @@ public class QuestGiver : NPC_Behaviors
     public bool amNeededInOtherQuest = false;
     public bool alreadyLoadedThisDialogue = false;
 
+    private void Start()
+    {
+        ForeignQuest = null;
+    }
 
     public override void Interact()
     {
@@ -31,10 +36,12 @@ public class QuestGiver : NPC_Behaviors
         //If I am the QuestTurnInPoint of another QuestGiver's Quest and that Quest from other is Completed...
         else if(amTurnInPoint)
         {
-            //TODO, the next conversation needs to load automatically after a conversation-5
             Debug.Log("I am acknowledging i am the turn in point of another quest");
+            if(ForeignQuest != null && ForeignQuest.QuestType.Contains(QuestType.CollectionGoal))
+            {
+                TakeQuestItemsFromInventory();
+            }
         }
-
         //Then choose between the below choices
 
         // if (the player has discovered a secret and loaded a new dialogue by doing so.
@@ -123,7 +130,10 @@ public class QuestGiver : NPC_Behaviors
 
     void CheckIfPlayerCompletedMyQuest()
     {
-        Quest.CheckGoals();
+        if (!Quest.QuestCompletedAndTurnedIn)//This line was added because without it, it was completing Let Ed Know you're here twice.
+        {
+            Quest.CheckGoals(); 
+        }
         if (Quest.QuestStatus)
         {
             questGiver_UI.ChangeQuestStatus("?", false);
@@ -133,16 +143,16 @@ public class QuestGiver : NPC_Behaviors
             {
                 TakeQuestItemsFromInventory();
             }
-                Debug.Log("questgiver completed quest method,");
-                dialogueManager.SetupNewDialogue(this.gameObject, path[1]);
-                Debug.Log("questgiver loaded new dialogue");
-                Quest.GiveReward();
-                Quest.QuestGoal.ForEach(g => g.Terminate());
-                PlayerCompletedMyTask = true;
-                AssignedQuest = false;
-                Quest = null; //reset the current quest,
-                              //check if I have another quest to assign
-                              //put that new Quest into the variable, or don't depending
+            Debug.Log("questgiver completed quest");
+            dialogueManager.SetupNewDialogue(this.gameObject, path[1]);
+            Debug.Log("questgiver loaded new dialogue");
+            Quest.GiveReward();
+            Quest.QuestGoal.ForEach(g => g.Terminate());
+            PlayerCompletedMyTask = true;
+            AssignedQuest = false;
+            Quest = null; //reset the current quest,
+                          //check if I have another quest to assign
+                          //put that new Quest into the variable, or don't depending
         }
         else
         {//load assignedQuest=true but has not completed it yet text
@@ -151,24 +161,43 @@ public class QuestGiver : NPC_Behaviors
         }
     }
 
+
+
     //under constunction...this method DELETES items from the game
     void TakeQuestItemsFromInventory()
     {
-        Debug.Log("taking quests from inventory to complete collection quest");
-        //OnRequestQuestItems?
+        QuestBaseClass receivedQuest;
+        if(ForeignQuest != null) //it won't be null here if a QuestGiving item has been looted and used
+        {
+            receivedQuest = ForeignQuest; //other
+        }
+        else
+        {
+            receivedQuest = Quest; //this
+        }
+        receivedQuest.CheckGoals();
+        Debug.Log("taking quests from inventory to complete a collection quest");
         InventoryList playersInventory = GameObject.FindWithTag("Inventory").GetComponent<InventoryList>();
         //get all QuestGoals of type CollectionGoal
-        foreach(CollectionGoal c in Quest.QuestGoal)
+        foreach(CollectionGoal c in receivedQuest.QuestGoal)
         {
             //fetch the RequiredAmount to see how many to remove
             int reqNumItemsToRemove = c.RequiredAmount;
             //fetch the RequiredItemName and attempt to remove it
             string questItemName = c.RequiredItemName;
+
+            Debug.Log("Need " + reqNumItemsToRemove +" "+ questItemName);
+
             for (int i = 0; i < reqNumItemsToRemove;i++)
             {
                 playersInventory.SearchInventoryAndRemoveIfFound(questItemName);
             }
         }
-
+        Debug.Log("questgiver completed quest");
+        //dialogueManager.SetupNewDialogue(this.gameObject, path[1]);   I DONT THINK THIS NEEDS TO BE HERE
+        //Debug.Log("questgiver loaded new dialogue. IM RDY TO TALK!");
+        Quest.GiveReward();
+        Quest.QuestGoal.ForEach(g => g.Terminate());
+        ForeignQuest = null;
     }
 }

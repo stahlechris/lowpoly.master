@@ -23,6 +23,9 @@ public class QuestBaseClass : MonoBehaviour
     public Transform QuestTurnInPoint { get; set; }
     public GameObject QuestReward { get; set; }
     public bool QuestStatus { get; set; }
+    public bool MustTurnInToComplete { get; set; }
+    public bool QuestCompletedAndTurnedIn { get; set; }
+    public NPC_UI QuestTurnInPointUI { get; set; }
 
     public virtual void CheckGoals()
     {
@@ -39,7 +42,8 @@ public class QuestBaseClass : MonoBehaviour
     {
         if(QuestReward != null)
         {
-            Debug.Log("Here's your reward for completing the quest! (from base class)");
+            Debug.Log("Here's your reward!\n LOL it's a Debug.Log() message " + "from base class");
+            QuestCompletedAndTurnedIn = true;
         }
     }
 }

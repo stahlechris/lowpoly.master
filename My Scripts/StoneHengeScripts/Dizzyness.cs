@@ -34,7 +34,7 @@ public class Dizzyness : MonoBehaviour
         float countdown = 10f;
         hasStartedTimer = true;
 
-        float startingAngle = transform.eulerAngles.y;
+        //float startingAngle = transform.eulerAngles.y;
         float previousY = transform.eulerAngles.y;
 
         float sumRotation = 0;

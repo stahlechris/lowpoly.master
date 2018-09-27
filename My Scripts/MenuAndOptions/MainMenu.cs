@@ -20,10 +20,15 @@ public class MainMenu : MonoBehaviour
     public GameObject sliderContainer;
     public Slider loadingSlider;
 
-    public Animator animator;
-    const float MIN_TIME_TO_SHOW_LOADING_SCREEN = 10f;
+    public Animator imageAnimator;
+    public Animator loaderBackgroundAnimator;
+    public Animator loaderFillAnimator;
+
+
+    const float MIN_TIME_TO_SHOW_LOADING_SCREEN = 4f;
     float loadTimer = 0f;
     bool StartedFade { get; set; }
+    public bool AllowedToLoad { get; set; }
 
     void Start()
     {
@@ -32,18 +37,16 @@ public class MainMenu : MonoBehaviour
 
     public void PlayGame()
     {
-        /* old way
+        /* old way LOL
 //audioSource.PlayOneShot(newgame_click);
 //SceneManager.LoadScene(NAME_OF_SCENE);
 */
 
         //initialize timer to when we pressed the button.
-        loadTimer = Time.time;
-
+        loadTimer = Time.deltaTime;
+        mainMenu.SetActive(false);
         StartCoroutine(LoadAsync(1));
     }
-
-
 
     IEnumerator LoadAsync(int sceneIndex)
     {
@@ -58,8 +61,10 @@ public class MainMenu : MonoBehaviour
 
         while(!loadOperation.isDone)
         {
+            //Debug.Log(loadTimer);
             //have to change it because unity goes from 0 - .9
             progress = Mathf.Clamp01(loadOperation.progress / .9f);
+            //Debug.Log(progress);
             loadingSlider.value = progress;
 
             if(loadOperation.progress >= 0.9f)//more accurate querying loadOp(0-.9)
@@ -68,38 +73,27 @@ public class MainMenu : MonoBehaviour
                 {
                     if (loadTimer > MIN_TIME_TO_SHOW_LOADING_SCREEN)
                     {
-                        //StartCoroutine(FadeOutToGame(loadOperation)); //is this costly to pass around?
-                        animator.SetTrigger("Fade");
-                        loadOperation.allowSceneActivation = true;
+                        StartedFade = true;
+                        loaderFillAnimator.SetTrigger("Fade");
+                        loaderBackgroundAnimator.SetTrigger("Fade");
+                        imageAnimator.SetTrigger("Fade");
+
+                        StartCoroutine(WaitForAllowedToLoad(loadOperation));
                         break;
                     }
                 }
             }
-            loadTimer += Time.time;
+            loadTimer += Time.deltaTime;
          yield return null; // wait until next frame before continuing
         }
     }
 
-    //this has to go in update to work
-    //IEnumerator FadeOutToGame(AsyncOperation loadOperation)
-    //{
-    //    StartedFade = true;
-
-    //    animator.SetTrigger("Fade");
-
-    //    //yield return new WaitUntil(() => animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f);
-    //    yield return new WaitForSeconds(5);
-    //    loadingScreenImage.SetActive(false);
-    //    sliderContainer.SetActive(false);
-
-    //    loadOperation.allowSceneActivation = true;
-    //    //Debug.Log(loadTimer);
-    //}
-
-
-
-
-
+    IEnumerator WaitForAllowedToLoad(AsyncOperation loadOperation)
+    {
+        yield return new WaitUntil(() => AllowedToLoad);
+        sliderContainer.SetActive(false);
+        loadOperation.allowSceneActivation = true;
+    }
     public void Options()
     {
         audioSource.PlayOneShot(options_click);

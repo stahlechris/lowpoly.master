@@ -13,7 +13,7 @@ namespace LowPoly.Character
         [SerializeField] Image m_ImageStamina;
         [SerializeField] float m_MaxStamina = 100;
         [SerializeField] float m_CurrentStamina = 99;
-        private float staminaRegenerationRate = 12f;
+        private float staminaRegenerationRate = 15f;
         private const int JUMP_COST = 5;
         private const float SPRINT_COST = 1f;
         [SerializeField] float timeItTakesToCatchMyBreath = 2f;

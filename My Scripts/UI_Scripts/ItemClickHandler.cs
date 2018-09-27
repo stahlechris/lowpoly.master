@@ -20,6 +20,16 @@ public class ItemClickHandler : MonoBehaviour
     public KeyCode m_Key; //assignable hotkeys
 
     private Button m_Button;
+    InventoryItemBase AttachedItem
+    {
+        get
+        {
+            ItemDragHandler dragHandler =
+                transform.GetComponentInChildren<ItemDragHandler>();
+            //            Debug.Log("ItemClickHandler tried to make an ItemDraghandler. got icon to drag" + dragHandler);
+            return dragHandler.Item;
+        }
+    }
 
     void Awake()
     {
@@ -45,16 +55,6 @@ public class ItemClickHandler : MonoBehaviour
         graphic.CrossFadeColor(color, m_Button.colors.fadeDuration, true, true);
     }
 
-    InventoryItemBase AttachedItem
-    {
-        get
-        {
-            ItemDragHandler dragHandler =
-            gameObject.transform.Find("ItemImage").GetComponent<ItemDragHandler>();
-//            Debug.Log("ItemClickHandler tried to make an ItemDraghandler. got icon to drag" + dragHandler);
-            return dragHandler.Item;
-        }
-    }
 
     public void OnItemClicked()
     {

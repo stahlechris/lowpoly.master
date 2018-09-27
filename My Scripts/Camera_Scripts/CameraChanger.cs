@@ -9,7 +9,7 @@ public class CameraChanger : MonoBehaviour
 	
 	void Update () 
     {
-        //TODO check on a timer, like in xbox controller script
+        //TODO disable this option entirely.
         if(Input.GetButtonDown("Camera")) // "  \  "
         {
             ChangeCam(camMode);
@@ -34,16 +34,19 @@ public class CameraChanger : MonoBehaviour
 
     IEnumerator CamChange() 
     {
+        //Debug.Log("Cam mode needs to be either 0 or 1 " + camMode);
         yield return null;
         if(camMode == 0)
         {
             ThirdPersonCam.SetActive(true);
             FirstPersonCam.SetActive(false);
+            //Debug.Log("ThirdPersonCam GO active. FirstPersonCam inactive.");
         }
         if(camMode == 1)
         {
             FirstPersonCam.SetActive(true);
             ThirdPersonCam.SetActive(false);
+            //Debug.Log("FirstPersonCam GO active. ThirdPersonCam inactive.");
         }
     }
     void OnDisable()

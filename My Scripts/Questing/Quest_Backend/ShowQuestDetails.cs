@@ -17,12 +17,15 @@ public class ShowQuestDetails : MonoBehaviour, IPointerEnterHandler, IPointerExi
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (quest != null)
+        if (eventData != null)
         {
-            active = true;
+            if (quest != null)
+            {
+                active = true;
 
-            ActivateQuestDescription();
-            ConstructQuestDescription(quest);
+                ActivateQuestDescription();
+                ConstructQuestDescription(quest);
+            }
         }
     }
     void ActivateQuestDescription()
@@ -47,7 +50,7 @@ public class ShowQuestDetails : MonoBehaviour, IPointerEnterHandler, IPointerExi
             if (active)
             {
                 foreach (QuestGoalBaseClass q in updatedQuest.QuestGoal)//May you always remember that time you freaked out about reference vs value and really it was just a problem of "++"
-                {
+                {                                                       //sept 24 - i am paying my respects to ^ this ^ comment. My god, I really did freak out.
                     if (q != null)
                     {
                         currAmt[++index] = q.CurrentAmount;
@@ -56,7 +59,14 @@ public class ShowQuestDetails : MonoBehaviour, IPointerEnterHandler, IPointerExi
                         currVsReq += currAmt[index] + " / " + reqAmt[index] + " " + q.QuestObjectiveObject;
                     }
                 }
-                descriptionText.SetText(updatedQuest.QuestDescription + currVsReq + lastQuestWord + "<br>");
+                if (!updatedQuest.QuestCompletedAndTurnedIn)
+                {
+                    descriptionText.SetText(updatedQuest.QuestDescription + currVsReq + lastQuestWord + "<br>"); //use html tags here bc we are inputting into a text thingy that eats those instead of "\n"
+                }
+                else
+                {
+                    descriptionText.SetText("COMPLETED!");
+                }
             }
             if (!active)
             {

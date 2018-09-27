@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public class Quest_TESTER : Quest
+﻿public class Quest_TESTER : Quest
 {
     void OnEnable()
     {
@@ -18,5 +16,6 @@ public class Quest_TESTER : Quest
         QuestStatus = false;
         QuestGoal.Add(new CollectionGoal(this, "Bird","Bird",false,"testItem",0,2));
         QuestGoal.ForEach(g => g.Init());
+        MustTurnInToComplete = true;
     }
 }

@@ -60,7 +60,6 @@ public class InventoryItemBase : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out hit, 1000))
         {
-            //todo....instantiate not setactive
             gameObject.SetActive(true);
             gameObject.transform.position = hit.point;
             gameObject.transform.eulerAngles = DropRotation;
@@ -73,6 +72,8 @@ public class InventoryItemBase : MonoBehaviour
         AudioSource.PlayClipAtPoint(pickupSound, transform.position);
         //Get rid of the rigidbody on the item we pick up. if it has one
         Destroy(gameObject.GetComponent<Rigidbody>());
+        //Get rid of the levitate on the item if it has one.
+        Destroy(gameObject.GetComponent<Levitate>());
         //Set Inactive (it's still there).
         gameObject.SetActive(false);
     }

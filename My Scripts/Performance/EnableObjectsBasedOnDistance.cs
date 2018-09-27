@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityStandardAssets.Water;
 
 /// <summary>
 ///  This script is to be used to help the Occlusion Culling system. 
@@ -21,21 +22,12 @@ public class EnableObjectsBasedOnDistance : MonoBehaviour
     //Drag demanding CPU/GPU object you wish to control here.
     [Tooltip("Drag a resource-intensive object you wish to cull here")]
     public GameObject demandingObject;//Ex:My WaterProDaytime
-    #region public GameObject[] demandingObjects
-    /*
-    [Tooltip("Drag resource-intensive objects you wish to cull here... + " +
-             "(Developer suggests rarely using this; " +
-             "Rather child your multiple GO's into an empty parent.")]
-    public GameObject[] resourceIntensiveObjects; //Look at tooltip!!*/
-    #endregion 
+
+    Water water;
+    public ParticleSystem fogBehindMe;
     //How often (sec) do we check the player's distance?
     [Tooltip("How often the script checks the target's position in seconds")]
     public float timer;//Ex:I check every 3 seconds...
-    /*Activate this variable if you want to check particle duration rather than emission count
-    //How long does it take for your particleFX to cover what you want hidden?
-    //[Tooltip("How long it takes your ParticleSystem to cover what you want hidden?")]
-    //public float particleDuration; //EX:My fog is dense enough to hide water after 1.5sec
-    */
     [Tooltip("How many particles does your system need to emit before it can hide an object behind it?")]
     public float particleCount; //Ex:My fog needs >= 125 particles to hide my water
     //How far away do you need to be for this behavior to do its thang thang?
@@ -50,7 +42,7 @@ public class EnableObjectsBasedOnDistance : MonoBehaviour
     #region Internal Variables
     private Transform myTransform;
     //Is the resource-intensive object on or off?
-    internal bool objectOn = true;
+    internal bool objectOn = true; //Have your object start on to reduce a lag spike
     //Variable to reset the timer
     internal float time;
     //Variable to check if target isFacing the resource-intensive object
@@ -58,12 +50,13 @@ public class EnableObjectsBasedOnDistance : MonoBehaviour
     //Is target behind the blocking particles?
     internal bool behindBlocker;
     //DONT WORRY ABOUT IT, GEEZ
-    internal float cachedAngle;
+    //internal float cachedAngle;
     #endregion
     #endregion
 
     void Start()
     {
+        water = demandingObject.GetComponentInChildren<Water>();
         myTransform = transform;
         time = timer;
     }
@@ -76,7 +69,7 @@ public class EnableObjectsBasedOnDistance : MonoBehaviour
             timer -= Time.deltaTime;
             if (timer < 1)
             {
-                //Every timer seconds check the player's distance, forward & particle count
+                //Every timer seconds check the player's distance and forward facing angle from the fog in front of the water.
                 CheckDistanceAndParticles();
                 ResetTimer();
             }
@@ -90,14 +83,19 @@ public class EnableObjectsBasedOnDistance : MonoBehaviour
     {
         //Check player's distance from the blocking particleFx
         var relativePoint = myTransform.InverseTransformPoint(target.position);
-        /* In my case, negative numbers occur when my target is behind my blocking particleFX.
+        /* In my case, negative numbers on the y occur when my target is behind my blocking particleFX.
          * Use Debug.Log(relativePoint) to check your needed x,y,z values ahead and behind 
          */
         //Debug.Log(relativePoint);
         if (relativePoint.y < particleForwardPadding)
         {
             behindBlocker = true;
-            //Debug.Log("Player is behind or near particles, no need to check if i should deactivate obj);
+            //Debug.Log("Player is behind or very near particles, no need to check which way he's facing.");
+            if (!objectOn)
+            {
+                ActivateResourceIntensiveObject(true);
+            }
+            //If player is close enough, we always want the water to look good af.
         }
         else
         {
@@ -106,53 +104,37 @@ public class EnableObjectsBasedOnDistance : MonoBehaviour
             //Now check which way target is facing
             Vector3 dirFromAtoB = (myTransform.position - target.position).normalized;
             float dot = Vector3.Dot(dirFromAtoB, target.forward);
-            //Debug.Log(dot + " dot vs forwardAngle  " + forwardAngle);
+
+            //Debug.Log(dot + " dot vs forwardAngle  " + forwardAngle + " dot needs to be under forward angle to turn simple");
             if (dot < forwardAngle)
-            { //Target is NOT looking at me enough for me to show myself
-                if (objectOn)
+            { //Target is in front of this fog, facing away from it.
+                if (objectOn) 
                 {
-                    //Debug.Log(dot + " angle is under " + forwardAngle + " turned off objects");
-                    ActivateResourceIntensiveObject(false); //Single
-                    //ActivateResourceIntensiveObjects(false);//Multiple[]
+                    //Debug.Log(dot + " angle is under " + forwardAngle + " water turning simple");
+                    ActivateResourceIntensiveObject(false);
                     isFacingObject = false;
                 }
             }
             else
             {
+                //Player is in front of the fog, facing it.
                 isFacingObject = true;
             }
         }
 
-        //TODO: Think about changing the logic to turn off the water if we ar3e inside the zone,
-        //but camera is looking directly away from it. - Sept. 13, 2018
-
-        //Don't turn off demanding object if target near or behind particleFX
+        //Check again if the player isn't behind the particles
         if (!behindBlocker)
         {
-            //Get distance from me to target
+            //Get distance from me (particles) to target(player) one more time
             float currentDistance = Vector3.Distance(myTransform.position, target.position);
             if (currentDistance > minDistance)
             {
-                if (particles.particleCount > particleCount)
+                if (objectOn)
                 {
-                    //ParticleSystem has emitted enough particles to hide an object
-                    if (objectOn)
-                    {
-                        ActivateResourceIntensiveObject(false); //Single 
-                        //ActivateResourceIntensiveObjects(false);//Multiple[]
-                    }
+                    ActivateResourceIntensiveObject(false); //turn water simple
                 }
-                #region Check ParticleFX Duration Instead Of Emmission Count Here
-                /* Activate the below if{} and deactivate the above if{}
-                 * when you want to check how long (sec) the particleFX has been playing.
-                if (particles.time > particleDuration)
-                {
-                    //Our particles have been playing long enough to cover up object
-                    ActivateResourceIntensiveObject(false);
-                }
-                */
-                #endregion
             }
+            //Player is behind the particle fx, if his new current distance is less than our minDistance
             else if (currentDistance < minDistance)
             {
                 //The target is within our minDistance
@@ -160,14 +142,11 @@ public class EnableObjectsBasedOnDistance : MonoBehaviour
                 {//Only ever activate the object if target is facing it
                     if (!objectOn)
                     {
-                        ActivateResourceIntensiveObject(true); //Single
+                        ActivateResourceIntensiveObject(true);
 
                         //Also stop playing the blocking particleFX if the player isn't looking at it.
                         particles.Stop();
-
-                        //ActivateResourceIntensiveObjects(true); //Multiple[]
-                        /*Debug.Log("target within min distance && target isFacing " +
-                              "me! Activating object");*/
+                       // Debug.Log("target within min distance && target isFacing " + "me! Activating object")
                     }
                 }
                 else
@@ -183,40 +162,24 @@ public class EnableObjectsBasedOnDistance : MonoBehaviour
     #region Single Resource Intensive Object Method Here
     internal void ActivateResourceIntensiveObject(bool active)
     {
-        Debug.Log("activated(" +active+ ") "+"resource intensive object!");
-
         if (!active)
         {
             //False, deactivate the object
-            demandingObject.SetActive(false);
+            water.waterMode = Water.WaterMode.Simple;
+            fogBehindMe.Stop();
             objectOn = false;
+            Debug.Log("Water turned simple. 1/3 quality. Fog behind me off");
         }
         else
         {
             //True, activate the object
-            demandingObject.SetActive(true);
+            water.waterMode = Water.WaterMode.Refractive;
+            fogBehindMe.Play();
             objectOn = true;
+            Debug.Log("Water turned refractive. 3/3 quality. Fog behind me on");
+
         }
     }
     #endregion
 
-    #region Multiple Resource Intensive Objects Method Here
-    //public void ActivateResourceIntensiveObjects(bool active)
-    //{
-    //    Debug.Log("Activated( " + active + ") " + "resource intensive objects! ");
-    //    foreach (GameObject go in resourceIntensiveObjects)
-    //    {
-    //        if (!active)
-    //        {
-    //            go.SetActive(false);
-    //            objectOn = false;
-    //        }
-    //        else
-    //        {
-    //            go.SetActive(true);
-    //            objectOn = true;
-    //        }
-    //    }
-    //}
-#endregion
 }

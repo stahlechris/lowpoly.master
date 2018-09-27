@@ -1,6 +1,6 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
+
 public class LegendSwordManager : MonoBehaviour 
 {
     public AudioSource my_audioSource;

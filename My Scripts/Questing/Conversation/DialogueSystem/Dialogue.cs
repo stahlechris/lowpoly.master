@@ -3,7 +3,6 @@ using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput;
 using TMPro;
 using System;
-using UnityEngine.UI;
 using LowPoly.Character;
 //Dialogue needs to be a prefab instantiated into the npc's UI at runtime, then destroyed when the conversation is over...
 //when the player goes to talk to the npc again, a new instantiation (without an update loop) will be made 
@@ -21,8 +20,6 @@ public class Dialogue : MonoBehaviour
     public bool isTyping = false;
     [SerializeField] Transform friend;
     public bool conversationOver = false;
-    public Rigidbody my_rigidBody;
-    public Collider my_collider;
     public TextAsset conversation { get; set; }
     public string path { get; set; }
     public bool Initialized { get; set; }
@@ -54,8 +51,6 @@ public class Dialogue : MonoBehaviour
     void Start()
     {
         path = GetComponentInParent<QuestGiver>().path[0]; //load a conversation initially, but conversations can be changed due to behaving a certain way!!
-        my_rigidBody = GetComponentInParent<Rigidbody>();
-        my_collider = GetComponentInParent<Collider>();
         LoadConversation();
         sentence = conversation.text.Split('_');
         ConversationConstructor();
@@ -88,6 +83,7 @@ public class Dialogue : MonoBehaviour
 
     public void HaveConversation()
     {
+        //Debug.Log("HaveConversation called in Dialogue.cs");
         if (!conversationOver)
         {
             Initialized = true;            
@@ -139,12 +135,14 @@ public class Dialogue : MonoBehaviour
             Initialized = false;
             conversationOver = true;
             DialogueEvents.FireAnEvent_OnDialogueEnd(this);
-            Debug.Log(this + " fired an OnDialogueEnd");
+            //Debug.Log(this + " fired an OnDialogueEnd");
             GetComponentInParent<QuestGiver>().EnableAndAssignMyQuest(assignsQuestWhenOver);
 
 
-            Debug.Log("Conversation complete, achievement unlocked");//TODO achievement system popup
+            //Debug.Log("Conversation complete, achievement unlocked");//TODO achievement system popup
             PlayerController player = ObjectFinder.PlayerController;
+            //Debug.Log("dialogue fetched " + player);
+
             player.alreadySpeaking = false;
             Global.USER_INPUT_ENABLED = true;
             player.transform.rotation = Quaternion.identity;
@@ -160,43 +158,19 @@ public class Dialogue : MonoBehaviour
             if (dialogueID == "Ip-0")
             {
                 NPC_AI ip_AI = GetComponentInParent<NPC_AI>();
-                JumpUpAndDown jumpBehavior = GetComponentInParent<JumpUpAndDown>();
-                jumpBehavior.enabled = false;
-                my_collider.enabled = false;
-                Animator animator = GetComponentInParent<Animator>();
-                animator.SetBool("run", true);
                 ip_AI.GoHome();
-                StartCoroutine(EnableKinematicRigidBodyAndCollider());
             }
         }
     }
-    IEnumerator EnableKinematicRigidBodyAndCollider()
-    {
-        yield return new WaitForSeconds(3);
-        my_rigidBody.isKinematic = false; //only non-kinematic rigidbodies can trigger OnTriggerEnter()
-        my_collider.enabled = true;
-    }
 
-    /*
-     * ISSUE:
-     * Dialogue will always have a different rotation bc lookAt depends on where the camera is looking
-     * WHAT WE KNOW:
-     * NPC_Canvas is instantiated with same y rotation as parent
-     * depending on user selected position of camera when interact, dialogue different
-     * FIX?:
-     * -manually reset transforms after x amt of time
-     */
     IEnumerator FaceMyFriend()
     {
-        //trying to simply zero out NPC_canvas(clone) AND TextMeshPro rotation
-        //THIS TOOK 2 HOURS TO FIGURE OUT
-        //ROTATION VS LOCALROTATION....STILL DONT FULLY UNDERSTAND. FUCK mEEeEEEEeEEeEEEEEEE
         yield return new WaitForSeconds(1.75f);
-        //NPC_UI socket needs to be reset as well
+
         Transform[] parent = GetComponentsInParent<Transform>();
-        parent[0].localRotation = Quaternion.Euler(0, 0, 0);
-        parent[1].localRotation = Quaternion.Euler(0, -180, 0);
-        parent[2].localRotation = Quaternion.Euler(0, 0, 0);
+        parent[0].localRotation = Quaternion.Euler(0, 0, 0); //reset NPC_UI socket
+        parent[1].localRotation = Quaternion.Euler(0, -180, 0); //reset NPC_canvas(clone)
+        parent[2].localRotation = Quaternion.Euler(0, 0, 0); //reset TextMeshPro rotation
         FacingFriend = true;
     }
 

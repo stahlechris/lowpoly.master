@@ -5,7 +5,7 @@ public class Item : InventoryItemBase
 {
     protected PlayerController player = null;
 
-    void OnTriggerStay(Collider other)
+    protected void OnTriggerStay(Collider other)
     {
         if (this.isActiveAndEnabled && this != null)
         {
@@ -21,7 +21,7 @@ public class Item : InventoryItemBase
 
         }
     }
-    void OnTriggerExit(Collider other)
+    protected void OnTriggerExit(Collider other)
     {
         if (player != null)
         {

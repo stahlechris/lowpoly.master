@@ -56,15 +56,12 @@ public class MeshCombiner : MonoBehaviour
         CombineInstance[] combine = new CombineInstance[meshFilters.Length];
         Mesh finalMesh = new Mesh();
 
-        Debug.Log(name + " is combining " + meshFilters.Length + meshFilters[1].name + " meshes!");
+        //Debug.Log(name + " is combining " + meshFilters.Length + meshFilters[1].name + " meshes!");
 
-        for (int i = 0; i < meshFilters.Length; i++)
+        for (int i = 1; i < meshFilters.Length; i++)
         {
-            //skip the empty parent
-            if (meshFilters[i].transform == transform)
-            {
-                continue;
-            }
+            //skip the empty parent by starting on index 1
+
             combine[i].subMeshIndex = 0;
             combine[i].mesh = meshFilters[i].sharedMesh;
             combine[i].transform = meshFilters[i].transform.localToWorldMatrix;

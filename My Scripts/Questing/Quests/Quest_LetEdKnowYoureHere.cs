@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public class Quest_LetEdKnowYoureHere : Quest 
+﻿public class Quest_LetEdKnowYoureHere : Quest 
 {
     void OnEnable()
     {
@@ -16,7 +14,7 @@ public class Quest_LetEdKnowYoureHere : Quest
             " Ip said his brother, Ed, was the one who called you " +
             "and he should be on the Templ's right side, next to the herd.";
         QuestStartPoint = transform.parent;
-        QuestTurnInPoint = GameObject.Find("Ed").transform;
+        QuestTurnInPoint = ObjectFinder.EdTransform;
         QuestReward = null;
         QuestStatus = true; //QuestStatus is true, you just need to turn in the Quest
         QuestGoal.Add(new ConversationGoal(this, "Ip","Ed", false, 0, 1, "Ed")); //Completed is false, you need to turn in the Quest to complete it

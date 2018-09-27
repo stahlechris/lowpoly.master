@@ -21,12 +21,12 @@ public class CullingSystem : MonoBehaviour
         }
         
     }
-    /*Optimization => It seems the sword cave, flower garden and carls cave should always be off until X distance away.
-
+/*
     //1. Flower garden(starts off) only activates by passing into the forest or the enabling rock.
     //   Entering other areas deactivates the flower garden.
     //2. Sword cave (starts off) only activates by passing into a collider nearby.
          Entering other areas deactivates sword cave.
+
 
     */
 
@@ -51,19 +51,19 @@ public class CullingSystem : MonoBehaviour
         }
         else if(areaName.Equals("Flower Garden"))
         {
-            //If you are here, there is no way you can see the sword cave or the enclosure
+            //If you are here, there is no way you can see the sword cave or the enclosure or the water
             //or carls mushroom cave
 
             if(status)
             {
+                areas[3].SetActive(false);
                 areas[8].SetActive(false);
                 areas[0].SetActive(false);
                 areas[11].SetActive(false);
             }
             else
             {
-                areas[0].SetActive(true);
-                areas[11].SetActive(false);
+                areas[0].SetActive(true);//sept 20 dont turn on carl after coming out of water...
             }
         }
         else if(areaName.Equals("Pers' Personal Garden"))
@@ -75,30 +75,31 @@ public class CullingSystem : MonoBehaviour
                 areas[11].SetActive(false);
             }
             else
-            {
-                areas[11].SetActive(true);
+            {//sept 20 dont turn on carl after coming out of water...
             }
         }
         else if (areaName.Equals("World's Edge"))
         {
-            //No way you can see carls, sword, flower garden, eds house area
+            //No way you can see carls, sword, flower garden, eds house area + dead tree area.
             if (status)
             {
                 areas[1].SetActive(false);
                 areas[11].SetActive(false);
+                areas[4].SetActive(false);
                 areas[8].SetActive(false);
                 areas[13].SetActive(false);
             }
             else
             {
-                areas[11].SetActive(true);
+                areas[4].SetActive(true);
+                //areas[11].SetActive(true); sept 20 dont turn on carl after coming out of water...
                 areas[13].SetActive(true);
             }
             
         }
         else if (areaName.Equals("Dead Forest"))
         {
-            //Cant see sword, carl, flower
+            //Cant see water, sword, carl, flower
             if (status)
             {
                 areas[3].SetActive(false);
@@ -109,7 +110,7 @@ public class CullingSystem : MonoBehaviour
             else
             {
                 areas[3].SetActive(true);
-                areas[11].SetActive(true);
+                //sept 20 dont turn on carl after coming out of water...
             }
             
         }
@@ -127,7 +128,7 @@ public class CullingSystem : MonoBehaviour
             }
             else
             {
-                areas[11].SetActive(true);
+                //sept 20 dont turn on carl after coming out of forest...
                 areas[0].SetActive(true);
             }
         }
@@ -142,7 +143,7 @@ public class CullingSystem : MonoBehaviour
             }
             else
             {
-                areas[11].SetActive(true);
+                //sept 20 dont turn on carl after coming out of temple...
             }
         }
         else if (areaName.Equals("Ip's Campsite"))
@@ -177,7 +178,7 @@ public class CullingSystem : MonoBehaviour
             }
             else
             {
-                areas[3].SetActive(true); //water first
+                //sept 20 dont turn on water after coming out of cave...
                 areas[0].SetActive(true);
                 areas[2].SetActive(true);
                 areas[4].SetActive(true);
@@ -199,10 +200,10 @@ public class CullingSystem : MonoBehaviour
             else
             {
                 areas[3].SetActive(true);
-                areas[11].SetActive(true);
+                //sept 20 dont turn on carl after coming out of henge...            
             }
         }
-        else if (areaName.Equals("Top o' the world!"))
+        else if (areaName.Equals("Top o' the world!")) //haven't tested this one...
         {
             //sword, carl
             if (status)
@@ -212,7 +213,11 @@ public class CullingSystem : MonoBehaviour
             }
             else
             {
-                areas[11].SetActive(true);
+                foreach(GameObject go in areas) //TODO convert to for loop
+                {
+                    if (!go.activeInHierarchy)
+                        go.SetActive(true);
+                }
             }
         }
         else if (areaName.Equals("Carls Mushroomy Cave"))
@@ -229,7 +234,7 @@ public class CullingSystem : MonoBehaviour
             }
             else
             {
-                areas[3].SetActive(true);  //water first
+                //areas[3].SetActive(true);  no need to activate water after coming out of carls cave
                 areas[4].SetActive(true);
                 areas[5].SetActive(true);
                 areas[9].SetActive(true);
@@ -241,11 +246,17 @@ public class CullingSystem : MonoBehaviour
             //flower, sword
             if (status)
             {
+                areas[11].SetActive(true); //activate carls place to pre load
+
                 areas[1].SetActive(false);
                 areas[8].SetActive(false);
+                areas[3].SetActive(false);
+
             }
             else
             {
+                areas[11].SetActive(true);
+                areas[3].SetActive(true);
             }
         }
         else if (areaName.Equals("Ed's Place"))
@@ -258,8 +269,7 @@ public class CullingSystem : MonoBehaviour
                 areas[8].SetActive(false);
             }
             else
-            {
-                areas[3].SetActive(true);
+            {//no need to activate water when leaving eds place. Clearing will do this
             }
         }
         else if (areaName.Equals("Temple's Path"))
@@ -272,8 +282,7 @@ public class CullingSystem : MonoBehaviour
                 areas[11].SetActive(false);
             }
             else
-            {
-                areas[11].SetActive(true);
+            {//no need to activate carls cave when leaving the path to the temple
             }
         }
     }

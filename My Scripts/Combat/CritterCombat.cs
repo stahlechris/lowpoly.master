@@ -20,64 +20,19 @@ namespace LowPoly.Character
         }
 
         //critters are one shotted
-        private void OnTriggerEnter(Collider other)
+        private void OnTriggerEnter(Collider other) //THIS NULL REF'S LIKE CRAZY 
         {//but immune to spell damage apparently LOL
+            //TODO IF( OTHER IS A WEAPON..OR JUST RETHINK THIS. ITS ALL SLOPPY
             InventoryItemBase item = other.GetComponent<InventoryItemBase>();
             if (item != null && item.ItemType == ItemType.Weapon)
             {
-                Animator playersAnimator = other.GetComponentInParent<Animator>();
+                Animator playersAnimator = other.GetComponentInParent<Animator>();   //THIS ASSUMES THE WEAPON IS ON A PLAYER!! NULL REF
                 if (playersAnimator.GetCurrentAnimatorStateInfo(0).IsName("Attack"))
                 {
                     StartDeathSequence();
-                    //m_CritterAI = GetComponent<CritterAI>();
-                    //m_CritterAI.StopAllCoroutines();
-                    //m_CritterAI.m_Agent.isStopped = true;
-                    //m_CritterAI.m_Agent.enabled = false;
-
-                    //Animator m_animator = GetComponent<Animator>();
-                    //m_animator.SetTrigger("die");
-
-                    //Destroy(GetComponent<Rigidbody>());
-
-                    //Invoke("DropLoot", 1);
-                    //isDead = true;
                 }
             }
         }
-
-        //void DropLoot()
-        //{
-
-        //    Die();
-        //    Destroy(GetComponent<CapsuleCollider>());
-        //    transform.Find("sheep_mesh").GetComponent<SkinnedMeshRenderer>().enabled = false;
-        //}
-        //void Die()
-        //{
-        //    AudioSource[] deathSound = transform.Find("Loot").GetComponentsInChildren<AudioSource>();
-        //    ParticleSystem[] fx = GetComponentsInChildren<ParticleSystem>();
-        //    fx[0].Play();
-        //    deathSound[0].Play();
-        //    deathSound[1].Play();
-        //    StartCoroutine(LootAppears(deathSound[2], fx[2]));
-
-        //}
-        //IEnumerator LootAppears(AudioSource itemAppears, ParticleSystem itemCloud)
-        //{
-        //    yield return new WaitForSeconds(4.1f);
-        //    foreach (GameObject item in loot)
-        //    {
-        //        item.SetActive(true);
-        //    }
-        //    itemAppears.Play();
-        //    itemCloud.Play();
-        //    DestroyAll();
-        //}
-
-        //void DestroyAll()
-        //{
-        //    Destroy(this.gameObject,30); //30 seconds to loot or gone forever, bitch
-        //}
 
         public void StartDeathSequence()
         {
@@ -124,14 +79,17 @@ namespace LowPoly.Character
         }
         IEnumerator LootAppears(AudioSource itemAppears, ParticleSystem itemCloud)
         {
-            yield return new WaitForSeconds(4.1f);
+            yield return new WaitForSeconds(4.5f);
             itemAppears.Play();
             itemCloud.Play();
+            //this assumes each critter only has 1 item to drop & meshRenderer & collider is disabled to start
+            GetComponentInChildren<MeshRenderer>().enabled = true;
+            GetComponentInChildren<Collider>().enabled = true;
+
             DestroyAll();
         }
         void ActivateLootItems()
         {
-            //we cant find inactivate objects...soooo this is good code, but bad Unity
             if (m_loot != null)
             {   //Transform implements numerable NOT gameobject...this is stupid
                 m_loot.SetActive(true);

@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public class Quest_FixTheFence : Quest
+﻿public class Quest_FixTheFence : Quest
 {
 	void OnEnable () 
     {
@@ -8,8 +6,7 @@ public class Quest_FixTheFence : Quest
         QuestType = new QuestType[]
         {
             global::QuestType.CollectionGoal,
-            global::QuestType.CollectionGoal,
-            global::QuestType.ConversationGoal
+            global::QuestType.CollectionGoal
         };
         QuestGiver_ID = "Ed-0";
         QuestName = "Fix The Fence";
