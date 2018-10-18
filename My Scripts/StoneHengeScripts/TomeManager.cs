@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 using LowPoly.Character;
+
 public class TomeManager : MonoBehaviour 
 {
     public StonehengeManager stonehengeManager;

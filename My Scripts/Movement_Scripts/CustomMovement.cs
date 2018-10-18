@@ -27,6 +27,8 @@ namespace LowPoly.Character
         float m_ForwardAmount;
         Vector3 m_GroundNormal;
         //bool autorunning = false;
+        bool StartedFallingToDeath { get; set; }
+        public AudioClip fallingDeathClip;
 
         public float GetAnimSpeedMultiplier()
         {
@@ -170,11 +172,11 @@ namespace LowPoly.Character
             RaycastHit hitInfo;
 #if UNITY_EDITOR
             // helper to visualise the ground check ray in the scene view
-            Debug.DrawLine(m_Transform.position + (Vector3.up * 0.1f), m_Transform.position + (Vector3.up * 0.1f) + (Vector3.down * m_GroundCheckDistance));
+            //Debug.DrawLine(m_Transform.position + (Vector3.up * 0.1f), m_Transform.position + (Vector3.up * 0.1f) + (Vector3.down * m_GroundCheckDistance));
 #endif
             // 0.1f is a small offset to start the ray from inside the character
             // it is also good to note that the transform position in the sample assets is at the base of the character
-            if (Physics.Raycast(m_Transform.position + (Vector3.up * 0.1f), Vector3.down, out hitInfo, m_GroundCheckDistance))
+            if (Physics.Raycast(m_Transform.position + (Vector3.up * 0.5f), Vector3.down, out hitInfo, m_GroundCheckDistance))
             {
                 m_GroundNormal = hitInfo.normal;
                 m_IsGrounded = true;
@@ -185,7 +187,25 @@ namespace LowPoly.Character
                 m_IsGrounded = false;
                 m_GroundNormal = Vector3.up;
                 m_Animator.applyRootMotion = false;
+
+                //we are not grounded, so check if we are in free fall
+                if(m_Rigidbody.velocity.y < -7.5)
+                {
+                    if (!StartedFallingToDeath)
+                    {
+                        StartedFallingToDeath = true;
+                        StartCoroutine(FallToYourDeath());
+                    }
+                }
             }
+        }
+
+        System.Collections.IEnumerator FallToYourDeath()
+        {
+            PlayerSFX.Instance.PlaySFX(fallingDeathClip,0.5f,1, true);
+            Debug.Log("told playersfx instnce to play my clip");
+            yield return new WaitForSeconds(2.5f);
+            ObjectFinder.HUD.GetComponentInChildren<InGameOptions>().ReloadScene();
         }
     }
 }

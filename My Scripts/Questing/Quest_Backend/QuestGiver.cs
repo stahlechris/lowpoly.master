@@ -76,7 +76,7 @@ public class QuestGiver : NPC_Behaviors
         {
             Quest.enabled = true;
             AssignedQuest = true;
-            Debug.Log("Questgiver attempting to add quest to log");
+            //Debug.Log("Questgiver attempting to add quest to log");
             playersQuestLog.AddQuestItem(Quest);
             Quest.transform.SetParent(playersQuestLog.transform);
 
@@ -89,7 +89,7 @@ public class QuestGiver : NPC_Behaviors
         }
         else
         {
-            Debug.Log("I don't have a quest to assign you after speaking to me " + this);
+            //Debug.Log("I don't have a quest to assign you after speaking to me " + this);
         }
     }
 
@@ -115,7 +115,7 @@ public class QuestGiver : NPC_Behaviors
                 //We then need to change the TurnInPoint's QuestGiver's NPC_UI to show a question mark
                 NPC_UI turnInPointNPC_UI = questTurnInPointGo.GetComponentInChildren<NPC_UI>();
                 turnInPointNPC_UI.ChangeQuestStatus("?", true);
-                Debug.Log("Changed ? to true from QuestGiver");
+                //Debug.Log("Changed ? to true from QuestGiver");
 
                 //And update boolean value so he can act correctly
                 target.amTurnInPoint = true;
@@ -137,15 +137,15 @@ public class QuestGiver : NPC_Behaviors
         if (Quest.QuestStatus)
         {
             questGiver_UI.ChangeQuestStatus("?", false);
-            Debug.Log("Changed ? to false from QuestGiver");
+            //Debug.Log("Changed ? to false from QuestGiver");
 
             if (Quest.QuestType.Contains(QuestType.CollectionGoal))
             {
                 TakeQuestItemsFromInventory();
             }
-            Debug.Log("questgiver completed quest");
+            //Debug.Log("questgiver completed quest");
             dialogueManager.SetupNewDialogue(this.gameObject, path[1]);
-            Debug.Log("questgiver loaded new dialogue");
+            //Debug.Log("questgiver loaded new dialogue");
             Quest.GiveReward();
             Quest.QuestGoal.ForEach(g => g.Terminate());
             PlayerCompletedMyTask = true;
@@ -156,7 +156,7 @@ public class QuestGiver : NPC_Behaviors
         }
         else
         {//load assignedQuest=true but has not completed it yet text
-            Debug.Log("i have given you a quest, but you have not yet completed it");
+            //Debug.Log("i have given you a quest, but you have not yet completed it");
             dialogueManager.SetupNewDialogue(this.gameObject, path[3]);
         }
     }
@@ -176,7 +176,7 @@ public class QuestGiver : NPC_Behaviors
             receivedQuest = Quest; //this
         }
         receivedQuest.CheckGoals();
-        Debug.Log("taking quests from inventory to complete a collection quest");
+        //Debug.Log("taking quests from inventory to complete a collection quest");
         InventoryList playersInventory = GameObject.FindWithTag("Inventory").GetComponent<InventoryList>();
         //get all QuestGoals of type CollectionGoal
         foreach(CollectionGoal c in receivedQuest.QuestGoal)
@@ -186,14 +186,14 @@ public class QuestGiver : NPC_Behaviors
             //fetch the RequiredItemName and attempt to remove it
             string questItemName = c.RequiredItemName;
 
-            Debug.Log("Need " + reqNumItemsToRemove +" "+ questItemName);
+            //Debug.Log("Need " + reqNumItemsToRemove +" "+ questItemName);
 
             for (int i = 0; i < reqNumItemsToRemove;i++)
             {
                 playersInventory.SearchInventoryAndRemoveIfFound(questItemName);
             }
         }
-        Debug.Log("questgiver completed quest");
+        //Debug.Log("questgiver completed quest");
         //dialogueManager.SetupNewDialogue(this.gameObject, path[1]);   I DONT THINK THIS NEEDS TO BE HERE
         //Debug.Log("questgiver loaded new dialogue. IM RDY TO TALK!");
         Quest.GiveReward();

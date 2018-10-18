@@ -4,10 +4,11 @@ using UnityStandardAssets.Water;
 /// <summary>
 ///  This script is to be used to help the Occlusion Culling system. 
 ///  Example: 
-///  I have a particleFX that looks like dense fog where my water meets my land.
+///  I have a particleFX that looks like fog where my water meets my land.
 ///  I place this script on an empty holding my particleFX because... 
-///  I want my water area culled when my player is X distance away from the water and can't see it.
+///  I want my water reduced in performance when my player is X distance away.
 /// </summary>
+/// 
 public class EnableObjectsBasedOnDistance : MonoBehaviour
 {
     #region Variables
@@ -17,19 +18,16 @@ public class EnableObjectsBasedOnDistance : MonoBehaviour
     [Tooltip("Drag a ParticleSystem here that blocks a resource-intensive obj")]
     public ParticleSystem particles;//Ex:My fog fx
     //Control mechanism to start/stop this behavior
-    [Tooltip("A control mechanism to enable/disable this behavior")]
+    [Tooltip("A control mechanism to enable/disable this script entirely")]
     public bool doBehavior = true;
     //Drag demanding CPU/GPU object you wish to control here.
     [Tooltip("Drag a resource-intensive object you wish to cull here")]
     public GameObject demandingObject;//Ex:My WaterProDaytime
-
     Water water;
     public ParticleSystem fogBehindMe;
-    //How often (sec) do we check the player's distance?
+    //How often (sec) do we check the player's distance from this object?
     [Tooltip("How often the script checks the target's position in seconds")]
     public float timer;//Ex:I check every 3 seconds...
-    [Tooltip("How many particles does your system need to emit before it can hide an object behind it?")]
-    public float particleCount; //Ex:My fog needs >= 125 particles to hide my water
     //How far away do you need to be for this behavior to do its thang thang?
     [Tooltip("How far away target needs to be for this behavior to activate")]
     public float minDistance;/*Ex - I have specifed my target needs to be > 10m away from this position
@@ -39,20 +37,22 @@ public class EnableObjectsBasedOnDistance : MonoBehaviour
     //0 is the particle fx is right here. 1 is 1m forward of it, 2 is 2m....
     [Tooltip("Add Meters to your particleFx's forward position you want this behavior to distance check from")]
     public float particleForwardPadding;//Ex. I set mine at 3
-    #region Internal Variables
+
+    #region Don't-touch-unless-you're-a-developer-Variables
     private Transform myTransform;
     //Is the resource-intensive object on or off?
-    internal bool objectOn = true; //Have your object start on to reduce a lag spike
+    bool objectOn = true; //Have your object start on to reduce a lag spike
     //Variable to reset the timer
-    internal float time;
+    float time;
     //Variable to check if target isFacing the resource-intensive object
-    internal bool isFacingObject;
+    bool isFacingObject;
     //Is target behind the blocking particles?
-    internal bool behindBlocker;
+    bool behindBlocker;
     //DONT WORRY ABOUT IT, GEEZ
     //internal float cachedAngle;
-    #endregion
-    #endregion
+    #endregion Don't-touch-unless-you're-a-developer-Variables
+
+    #endregion All 
 
     void Start()
     {
@@ -90,7 +90,7 @@ public class EnableObjectsBasedOnDistance : MonoBehaviour
         if (relativePoint.y < particleForwardPadding)
         {
             behindBlocker = true;
-            //Debug.Log("Player is behind or very near particles, no need to check which way he's facing.");
+            //Debug.Log("Player is behind or very near particles, no need to check which way he's facing to ensure water turns refractive fast enough! ");
             if (!objectOn)
             {
                 ActivateResourceIntensiveObject(true);
@@ -159,6 +159,7 @@ public class EnableObjectsBasedOnDistance : MonoBehaviour
             }
         }
     }
+
     #region Single Resource Intensive Object Method Here
     internal void ActivateResourceIntensiveObject(bool active)
     {
@@ -166,18 +167,19 @@ public class EnableObjectsBasedOnDistance : MonoBehaviour
         {
             //False, deactivate the object
             water.waterMode = Water.WaterMode.Simple;
+            //False, Stop() playing the particleFX behind me too
             fogBehindMe.Stop();
             objectOn = false;
-            Debug.Log("Water turned simple. 1/3 quality. Fog behind me off");
+           // Debug.Log("Water turned simple. 1/3 quality. Fog behind me off");
         }
         else
         {
             //True, activate the object
             water.waterMode = Water.WaterMode.Refractive;
+            //True, Play() the particleFX behind me
             fogBehindMe.Play();
             objectOn = true;
-            Debug.Log("Water turned refractive. 3/3 quality. Fog behind me on");
-
+            //Debug.Log("Water turned refractive. 3/3 quality. Fog behind me on");
         }
     }
     #endregion

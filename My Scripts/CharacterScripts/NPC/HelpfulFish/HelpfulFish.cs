@@ -15,6 +15,8 @@ public class HelpfulFish : Interactable
 
     public TurnObjectsOffWhenInWater sheepSphere;
 
+    public SetCamera setCamera;
+
     void OnTriggerStay(Collider other) //idea. ride the fish. make a little cave 
     {
         if (player == null)
@@ -62,6 +64,7 @@ public class HelpfulFish : Interactable
         player.transform.rotation = Quaternion.identity; //reset rotation
         rb.constraints = RigidbodyConstraints.None;//unfreeze
         rb.constraints = RigidbodyConstraints.FreezeRotation;//refreeze to ground
+        SetCameraBackToNormal();
     }
     IEnumerator Wait()
     {
@@ -79,10 +82,8 @@ public class HelpfulFish : Interactable
     }
 
 
-    void CleanUpTheOcean()
+    void SetCameraBackToNormal()
     {
-        //TODO destroy/disable objects here...
-        //After you talk to the fish, or return to shore with the coin,
-        //I want a boulder to fall to block the ocean so we can destroy all objects and save on performance
+        setCamera.AdjustCameraForPlaying();
     }
 }

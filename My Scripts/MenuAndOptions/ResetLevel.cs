@@ -20,7 +20,7 @@ public class ResetLevel : MonoBehaviour
         KeyManager.hasOceanKey = false;
         KeyManager.hasTempleKey = false;
         KeyManager.hasCarlKey = false;
-        KeyManager.hasBehindTempleKey = false;
+        KeyManager.hasSpaceKey = false;
         KeyManager.hasDeadForestKey = false;
         KeyManager.hasFlowerGardenKey = false;
         KeyManager.hasSwordCaveKey = false;

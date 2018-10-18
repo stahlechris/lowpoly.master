@@ -6,6 +6,7 @@ public class ObjectFinder : MonoBehaviour
     #region Systems
     public static HUD HUD { get; set; }
     public static QuestList QuestLog { get; set; }
+    public static EndlessPlatformSystem EndlessPlatformSystem { get; set; }
     #endregion
 
     #region PLAYER
@@ -35,9 +36,10 @@ public class ObjectFinder : MonoBehaviour
         #region Systems
         HUD = GameObject.FindWithTag("HUD").GetComponent<HUD>();
         //Debug.Log(this + " found HUD? => " + HUD);
-
         QuestLog = GameObject.FindWithTag("QuestLog").GetComponent<QuestList>();
         //Debug.Log(this + " found Questlist? => " + QuestLog);
+        EndlessPlatformSystem = GameObject.FindWithTag("EndlessPlatformSystem").GetComponent<EndlessPlatformSystem>();
+         
         #endregion
 
         #region PLAYER

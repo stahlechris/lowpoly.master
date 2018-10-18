@@ -78,7 +78,8 @@ public class SpaceCube : MonoBehaviour
 
     public void DealKnockbackDamage()
     {
-        stonehengeManager.EnableStonehengeCam(false);
+        //stonehengeManager.EnableStonehengeCam(false);
+
         //Debug.Log("Dealing knockback damage");
         KnockBack();
         DealDamage();

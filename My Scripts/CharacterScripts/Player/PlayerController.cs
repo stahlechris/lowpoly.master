@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput;
 using LowPoly.Weapon;
@@ -259,6 +260,9 @@ namespace LowPoly.Character
             }
             else
             {
+                //we are talking to a tome
+                thirdPersonCam.RotateCamera(m_PersonRequestingToBeSpokenWith.transform);
+
                 //dont set and just interact freely
 
             }
@@ -287,7 +291,6 @@ namespace LowPoly.Character
                 goItem.transform.parent = null;
             }
         }
-
 
         //TODO fix - the logic below for using an inventory item is totally B0rked
         void Inventory_ItemUsed(object sender, InventoryEventArgs e)
@@ -331,21 +334,29 @@ namespace LowPoly.Character
         {
             GameObject itemToDrop = mItemIAmHolding.gameObject;
 
-            inventory.RemoveItem(mItemIAmHolding);
-
-            Rigidbody rbItem = itemToDrop.AddComponent<Rigidbody>();
-
-            if (rbItem != null)
+            if (itemToDrop != null)
             {
-                animator.SetTrigger(DROP_ITEM);   
+                inventory.RemoveItem(mItemIAmHolding);
+                //StartCoroutine(DropItem(itemToDrop));
 
-                //toss with enough force to not trigger pickup message
-                rbItem.AddForce(transform.up * 2.75f, ForceMode.Impulse);
-                rbItem.AddForce(transform.forward * 2f, ForceMode.Impulse);
-
-                //we need a delay so the item doesn't just hang in the air
-                Invoke("DestroyDropItem", 0.6f);
+                Rigidbody rbItem = itemToDrop.AddComponent<Rigidbody>();
+                if (rbItem != null)
+                {
+                    animator.SetTrigger(DROP_ITEM);
+                    StartCoroutine(DropItem(rbItem));
+                }
             }
+        }
+        IEnumerator DropItem(Rigidbody rbItem)
+        {
+            animator.SetTrigger(DROP_ITEM);
+
+            rbItem.AddForce(transform.up * 2.75f, ForceMode.Impulse);
+            rbItem.AddForce(transform.forward * 2f, ForceMode.Impulse);
+
+            //we need a delay so the item doesn't just hang in the air
+            yield return new WaitForSeconds(0.7f);
+            DestroyDropItem();
         }
         public void DestroyDropItem()
         {

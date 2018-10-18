@@ -11,7 +11,7 @@ public enum CrateName : byte//wtf c# enums are fucked up? why do i have to cast
     OceanCrate,
     TempleCrate,
     CarlCrate,
-    BehindTempleCrate,
+    SpaceCrate,
     DeadForestCrate,
     FlowerGardenCrate,
     SwordCaveCrate,

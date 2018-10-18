@@ -73,7 +73,7 @@ public class OfferingAreaManager : MonoBehaviour
     public void SequenceOver()
     {
         offeringRock.ChangeUI();
-        //Disable the previous UI on the rock(image or text)
+        //TODO Disable the previous UI on the rock(image or text)
         //Load the next offering riddle
     }
 

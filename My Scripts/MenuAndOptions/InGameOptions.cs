@@ -4,6 +4,8 @@ using UnityEngine.UI;
 
 public class InGameOptions : MonoBehaviour 
 {
+    Scene currentScene;
+
     const string SCENE_NAME = "TestLiamControls";
     [SerializeField] Transform inventoryPanel;
     [SerializeField] Image[] inventoryPanelImages;//serialize for visualition
@@ -30,8 +32,10 @@ public class InGameOptions : MonoBehaviour
     }
     public void ReloadScene()
     {
+        currentScene = SceneManager.GetActiveScene();
+
         Reset();
-        SceneManager.LoadScene(SCENE_NAME);
+        SceneManager.LoadScene(currentScene.name);
     }
 
     public void Nudge()
@@ -103,7 +107,7 @@ public class InGameOptions : MonoBehaviour
         KeyManager.hasOceanKey = false;
         KeyManager.hasTempleKey = false;
         KeyManager.hasCarlKey = false;
-        KeyManager.hasBehindTempleKey = false;
+        KeyManager.hasSpaceKey = false;
         KeyManager.hasDeadForestKey = false;
         KeyManager.hasFlowerGardenKey = false;
         KeyManager.hasSwordCaveKey = false;

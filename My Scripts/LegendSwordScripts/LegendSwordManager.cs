@@ -9,6 +9,8 @@ public class LegendSwordManager : MonoBehaviour
     public GameObject cameraArm;
     public GameObject templeCam;
 
+    //public SetCamera setCamera;
+
     void Start()
     {
         swordParts = GetComponentsInChildren<Transform>();
@@ -54,6 +56,7 @@ public class LegendSwordManager : MonoBehaviour
         swordPart.GetComponent<Light>().enabled = false;
         templeCam.SetActive(false);
         cameraArm.SetActive(true);
+        //setCamera.AdjustCameraForPlaying();
     }
 
     //void ShowLegendPieceCollected

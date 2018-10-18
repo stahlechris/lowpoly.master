@@ -70,8 +70,8 @@ public class NPC_Behaviors : Interactable
         }
         else
         {
-            Debug.Log("my_dialogue in NPC_Behaviors came up as null for some reason, if you want to get mad, take a look in the inspector - 100% sure it's not null at all." +
-                      "anyways...im fetching it again");       //Occasionally this comes up null, as if the base keyword is being ignored
+           // Debug.Log("my_dialogue in NPC_Behaviors came up as null for some reason, if you want to get mad, take a look in the inspector - 100% sure it's not null at all." +
+                      //"anyways...im fetching it again");       //Occasionally this comes up null, as if the base keyword is being ignored
             my_Dialogue = GetComponentInChildren<Dialogue>();
             //Debug.Log(my_Dialogue.name);
             my_Dialogue.HaveConversation();

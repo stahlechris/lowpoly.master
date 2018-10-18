@@ -6,6 +6,7 @@ using UnityEngine;
  //InventoryList stores an IList of Stacks that hold like Items.
 public class InventoryList : MonoBehaviour
 {
+    //The number of items you can carry in game.
     private const int NUMBER_OF_SLOTS = 10;
     private IList<InventorySlotStack> m_ListOfSlotStacks = new List<InventorySlotStack>();
 
@@ -54,7 +55,7 @@ public class InventoryList : MonoBehaviour
     {
         foreach (InventorySlotStack slot in m_ListOfSlotStacks)
         {
-            if (slot.IsEmpty)
+            if (slot.IsEmpty) //True if Count is == 0
             {
                 return slot;
             }
@@ -64,7 +65,7 @@ public class InventoryList : MonoBehaviour
 
     public void AddItem(InventoryItemBase item)
     {
-        //Debug.Log("You want to add " + item);
+        Debug.Log("You are adding a " + item);
         if(item.ItemType == ItemType.Key)
         {
             KeyManager.SetKeyActive(item.Name, true);
@@ -78,17 +79,17 @@ public class InventoryList : MonoBehaviour
         InventorySlotStack freeSlot = FindStackableSlot(item);
         if (freeSlot == null)
         {
-            //Debug.Log("An item you don't currently have has been added ");
+            Debug.Log("An item you don't currently have has been added to an empty slot ");
             freeSlot = FindNextEmptySlot();
         }
         if (freeSlot != null)
         {
             //Debug.Log("Item added");
             freeSlot.AddItem(item);
-            //Debug.Log("You have " + freeSlot.Count + item + "'s");
+            Debug.Log("You have " + freeSlot.Count +" "+ item + "'s");
             if (OnItemAdded != null)
             {
-                //Debug.Log("I raised an OnItemAdded event to let your HUD know you added an item");
+                Debug.Log("I raised an OnItemAdded event to let your HUD know you added an item so it can update your UI.");
                 OnItemAdded(this, new InventoryEventArgs(item,false));
             }
         }

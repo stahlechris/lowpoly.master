@@ -2,6 +2,7 @@
 using LowPoly.Character;
 using System.Collections;
 using EZCameraShake;
+using UnityEngine.SceneManagement;
 public class StonehengeManager : MonoBehaviour 
 {
     public bool HasCircledMe { get; set; }
@@ -27,13 +28,16 @@ public class StonehengeManager : MonoBehaviour
     public Quest stonehengeQuest;
     CameraShakeInstance instance;
     public QuestList playersQuestLog;
-
-
+    public SetCamera setCamera;
+    public CameraChanger cameraChanger;
     //TODO: Seperate the two cutscenes into different classes, only call from here
     public void Handle_ReadingWithoutPermission(PlayerController player)
     {
         Debug.Log("Situation received. Grabbing hold of this player");
-        PlayEyeguardCutsceneNoPoke(player);
+        SceneManager.LoadSceneAsync(2);
+        //crossed below off to test loading a thing
+
+        //PlayEyeguardCutsceneNoPoke(player);
         //play sound fx
 
         //tell the eyeguard to act
@@ -51,7 +55,9 @@ public class StonehengeManager : MonoBehaviour
     public void Handle_PokingTheEyeguard(AudioClip gettingPokeSound, PlayerController player)
     {
         Debug.Log("Eyeguard told me you poked him??");
-        PlayPokingEyeCutscene(gettingPokeSound, player);
+        SceneManager.LoadSceneAsync(2);
+
+        //PlayPokingEyeCutscene(gettingPokeSound, player);
     }
     public void PlayPokingEyeCutscene(AudioClip audio, PlayerController player)
     {
@@ -67,13 +73,17 @@ public class StonehengeManager : MonoBehaviour
     {//will give control to the stonehengecam on false arg
         if (active)
         {
-            MAIN_CAMERA.SetActive(false);
-            eyeguardPokeCam.SetActive(true);
+            //MAIN_CAMERA.SetActive(false);
+            //eyeguardPokeCam.SetActive(true);
+
+            cameraChanger.FirstPersonCam = eyeguardPokeCam;
         }
         else
         {
-            stonehengeCam.SetActive(true);
-            eyeguardPokeCam.SetActive(false);
+            //stonehengeCam.SetActive(true);
+            //eyeguardPokeCam.SetActive(false);
+
+
         }
         
     }
@@ -149,13 +159,16 @@ public class StonehengeManager : MonoBehaviour
         //Sets active Main cam or stonehenge cam
         if(active)
         {
-            MAIN_CAMERA.SetActive(false);
-            stonehengeCam.SetActive(true);
+            //MAIN_CAMERA.SetActive(false);
+            //stonehengeCam.SetActive(true);
+
+            cameraChanger.FirstPersonCam = stonehengeCam;
+
         }
         else
         {
-            MAIN_CAMERA.SetActive(true);
-            stonehengeCam.SetActive(false);
+            //MAIN_CAMERA.SetActive(true);
+            //stonehengeCam.SetActive(false);
         }
     }
 
@@ -177,6 +190,7 @@ public class StonehengeManager : MonoBehaviour
     IEnumerator ShakeTheCameraRoutine(float duration)
     {
         instance = CameraShaker.Instance.StartShake(3f, 3f, 0.5f);
+        Debug.Log(instance);
         yield return new WaitForSeconds(duration);
         instance.StartFadeOut(0.5f);
     }

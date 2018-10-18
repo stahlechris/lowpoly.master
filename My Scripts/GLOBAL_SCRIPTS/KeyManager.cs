@@ -11,7 +11,7 @@ public static class KeyManager
     public static bool hasOceanKey;
     public static bool hasTempleKey;
     public static bool hasCarlKey;
-    public static bool hasBehindTempleKey;
+    public static bool hasSpaceKey;
     public static bool hasDeadForestKey;
     public static bool hasFlowerGardenKey;
     public static bool hasSwordCaveKey;
@@ -66,11 +66,11 @@ public static class KeyManager
                 else
                     hasCarlKey = false;
                 break;
-            case "BehindTempleKey":
+            case "SpaceKey":
                 if (active)
-                    hasBehindTempleKey = true;
+                    hasSpaceKey = true;
                 else
-                    hasBehindTempleKey = false;
+                    hasSpaceKey = false;
                 break;
             case "DeadForestKey":
                 if (active)
@@ -132,7 +132,7 @@ public static class KeyManager
                 else
                     return false;
             case 5:
-                if (hasBehindTempleKey)
+                if (hasSpaceKey)
                     return true;
                 else
                     return false;

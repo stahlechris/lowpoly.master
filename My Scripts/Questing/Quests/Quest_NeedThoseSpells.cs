@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class Quest_IWantThoseSpells : Quest
+public class Quest_NeedThoseSpells : Quest
 {
     void OnEnable()
     {
@@ -10,7 +10,7 @@ public class Quest_IWantThoseSpells : Quest
             global::QuestType.CollectionGoal,
         };
         QuestGiver_ID = "Eyeguard-0";
-        QuestName = "I Want Those Spells!!";
+        QuestName = "Need Those Spells!!";
         QuestDescription = "There's gotta be a way around the Eyeguard's tricks...";
         QuestStartPoint = null;
         QuestTurnInPoint = GameObject.Find("Eyeguard").transform;

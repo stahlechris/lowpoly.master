@@ -29,8 +29,7 @@ public class SetCamera : MonoBehaviour
     public ThirdPerson_Camera thirdPerson_Camera;
     public ThirdPersonCameraMouseControls thirdPersonCameraMouse;
 
-
-    void Start()
+    private void OnEnable()
     {
         myTransform = transform;
         DialogueEvents.OnDialogueEnd += Handle_OnDialogueEnd;
@@ -73,7 +72,7 @@ public class SetCamera : MonoBehaviour
             //Play a "Camera is Set" sound
             isFacingTarget = true;
 
-            cameraChanger.ChangeCam(0); //0 is speaker's cam. 1 is player's cam.
+            cameraChanger.ChangeCam(0); //0 is always speaker's cam. 1 is always player's cam.
 
             audioSource.PlayOneShot(cameraLockSound);
         }
@@ -120,5 +119,3 @@ public class SetCamera : MonoBehaviour
     }
 }
 
-
-//we want the left (x) to go down --....up  (y) to go up ++ by about |15|

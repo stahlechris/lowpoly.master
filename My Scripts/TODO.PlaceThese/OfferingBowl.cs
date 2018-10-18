@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-
 public class OfferingBowl : MonoBehaviour 
 {
     [SerializeField] OfferingAreaManager manager;
@@ -13,6 +12,7 @@ public class OfferingBowl : MonoBehaviour
     const string ITEM_THREE = "Ancient Flower";
     const string ITEM_FOUR = "Bird_Book";
     const string ITEM_FIVE = "something";
+    const string PLAYER_TAG = "Player";
 
     [SerializeField] GameObject ITEM_ONE_REWARD;
     [SerializeField] GameObject ITEM_TWO_REWARD;
@@ -39,7 +39,7 @@ public class OfferingBowl : MonoBehaviour
     private void OnCollisionEnter(Collision collision)
     {
         //If the player's thrown object hasnt't entered, and we are checking for collisions, and it isn't the player
-        if (!HasEntered && CheckForCollisions && !collision.collider.CompareTag("Player"))
+        if (!HasEntered && CheckForCollisions && !collision.collider.CompareTag(PLAYER_TAG))
         {
             CheckForCollisions = false;                                         //Only check for collisions after the process is over
             HasEntered = true;
@@ -120,7 +120,6 @@ public class OfferingBowl : MonoBehaviour
             ActivateLootItems();
             PlayDeathFX();
         }
-        Debug.Log("you already started the death sequence");
     }
 
     private void PlayDeathFX()
